@@ -24,4 +24,4 @@ File.open('config.h', 'ab') do |f|
 end
 
 
-create_makefile('sflowtool')
+create_makefile('sflowtool/sflowtool')

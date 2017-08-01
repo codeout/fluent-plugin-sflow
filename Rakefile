@@ -1,2 +1,10 @@
 require "bundler/gem_tasks"
-task :default => :spec
+require "rake/extensiontask"
+
+task :build => :compile
+
+Rake::ExtensionTask.new("sflowtool") do |ext|
+  ext.lib_dir = "lib/sflowtool"
+end
+
+task :default => [:clobber, :compile]
