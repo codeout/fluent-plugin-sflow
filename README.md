@@ -1,36 +1,135 @@
-# Fluent::Plugin::Sflow
+# fluent-plugin-sflow
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fluent/plugin/sflow`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Overview
 
-TODO: Delete this and the text above, and describe your gem
+[Fluentd](http://fluentd.org/) input plugin that acts as sFlow v2/v4/v5 collector.
 
-## Installation
+Including a ruby wrapper of [sflowtool](http://www.inmon.com/technology/sflowTools.php) which processes sFlow datagrams to report in JSON format.
 
-Add this line to your application's Gemfile:
 
-```ruby
-gem 'fluent-plugin-sflow'
-```
+## Features
 
-And then execute:
+fluent-plugin-sflow supports many packet formats below. Basically it can process anything sflowtool can do. :sparkles:
 
-    $ bundle
+See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for more details.
 
-Or install it yourself as:
+### Sample Type
 
-    $ gem install fluent-plugin-sflow
+* Flow Sample
+* Counter Sample
 
-## Usage
+### Address Family
 
-TODO: Write usage instructions here
+* IPv4
+* IPv6
 
-## Development
+### Extended Data Type
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+* Switch
+* Router
+* Gateway_v2
+* Gateway
+* User
+* Url
+* mplsLabelStack
+* Mpls
+* Nat
+* NatPort
+* MplsTunnel
+* MplsVC
+* MplsFTN
+* MplsLDP_FEC
+* VlanTunnel
+* WifiPayload
+* WifiRx
+* WifiTx
+* Aggregation
+* Socket4
+* ProxySocket4
+* Socket6
+* ProxySocket6
+* Decap
+* VNI
+* TCPInfo
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+### Counter Data Type
+
+* ethernet
+* tokenring
+* vg
+* vlan
+* 80211
+* processor
+* radio
+* OFPort
+* portName
+* OVSDP
+* host_hid
+* adaptors
+* host_parent
+* host_cpu
+* host_mem
+* host_dsk
+* host_nio
+* host_ip
+* host_icmp
+* host_tcp
+* host_udp
+* host_vnode
+* host_vcpu
+* host_vmem
+* host_vdsk
+* host_vnio
+* host_gpu_nvml
+* bcm_tables
+* memcache
+* memcache2
+* http
+* JVM
+* JMX
+* APP
+* APP_RESOURCE
+* APP_WORKERS
+* VDI
+* LACP
+* SFP
+
+
+## Requirement
+
+
+## Install
+
+
+## Configuration
+
+
+## Record Example
+
+
+## Benchmark
+
+
+## TODO
+
+* Add more tests
+  * Please send me the sFlow pcap file if your device is not supporeted. :cyclone:
+    1. Archive your pcap in .zip or .gz
+    2. [Open a new issue](https://github.com/codeout/fluent-plugin-sflow/issues/new)
+    3. Attache the archive
+* Merge into [RubyGem](https://rubygems.org/gems/fluent-plugin-sflow).
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fluent-plugin-sflow.
+Please report issues or enhancement requests to [GitHub issues](https://github.com/codeout/fluent-plugin-sflow/issues).
+For questions or feedbacks write to my twitter @codeout.
 
+Or send a pull request to fix.
+
+
+## Copyright and License
+
+Copyright (c) 2017 Shintaro Kojima. Code released under the [MIT license](LICENSE.txt).
+
+Code includes a part of [sflowtool](http://www.inmon.com/technology/sflowTools.php) which is distributed in the [InMon sFlow License](http://www.inmon.com/technology/sflowlicense.txt).
