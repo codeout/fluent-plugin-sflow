@@ -957,7 +957,7 @@ static void decodeIPV6(SFSample *sample)
     {
       int ipVersion = (*ptr >> 4);
       if(ipVersion != 6) {
-	sf_log(sample,"header decode error: unexpected IP version: %d\n", ipVersion);
+	fprintf(ERROUT, "header decode error: unexpected IP version: %d\n", ipVersion);
 	return;
       }
     }
@@ -1506,7 +1506,7 @@ static char *printTag(uint32_t tag, char *buf) {
 
 static void skipTLVRecord(SFSample *sample, uint32_t tag, uint32_t len, char *description) {
   char buf[51];
-  sf_log(sample,"skipping unknown %s: %s len=%d\n", description, printTag(tag, buf), len);
+  fprintf(ERROUT, "skipping unknown %s: %s len=%d\n", description, printTag(tag, buf), len);
   skipBytes(sample, len);
 }
 
@@ -2035,7 +2035,7 @@ static void readFlowSample_header(SFSample *sample)
   case SFLHEADER_POS:
   case SFLHEADER_IEEE80211_AMPDU:
   case SFLHEADER_IEEE80211_AMSDU_SUBFRAME:
-    sf_log(sample,"NO_DECODE headerProtocol=%d\n", sample->headerProtocol);
+    fprintf(ERROUT,"NO_DECODE headerProtocol=%d\n", sample->headerProtocol);
     break;
   default:
     fprintf(ERROUT, "undefined headerProtocol = %d\n", sample->headerProtocol);
