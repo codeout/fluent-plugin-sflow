@@ -4080,7 +4080,7 @@ static void readSFlowDatagram(SFSample *sample)
   -----------------___________________________------------------
 */
 
-static void receiveSFlowDatagram(SFSample *sample)
+void receiveSFlowDatagram(SFSample *sample)
 {
   if(sfConfig.forwardingTargets || sfConfig.forwardingTargets6) {
     /* if we are forwarding, then do nothing else (it might
