@@ -1,5 +1,3 @@
-require "fluent/plugin/sflow/version"
-
 module Fluent
   module Plugin
     module Sflow
