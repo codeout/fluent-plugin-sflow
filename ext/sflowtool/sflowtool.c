@@ -3989,6 +3989,8 @@ static void readSFlowDatagram(SFSample *sample)
   uint32_t samplesInPacket;
   char buf[51];
   
+  sf_log(sample, "\"header\": {");
+
   /* log some datagram info */
   sf_log(sample,"\"datagram_source_ip\":\"%s\",", printAddress(&sample->sourceIP, buf));
   sf_log(sample,"\"datagram_size\":%u,", sample->rawSampleLen);
@@ -4025,7 +4027,7 @@ static void readSFlowDatagram(SFSample *sample)
   {
     uint32_t samp = 0;
 
-    sf_log(sample, "\"samples\":[");
+    sf_log(sample, "}, \"samples\":[");
     for(; samp < samplesInPacket; samp++) {
       if((uint8_t *)sample->datap >= sample->endp) {
 	fprintf(ERROUT, "unexpected end of datagram after sample %d of %d\n", samp, samplesInPacket);
