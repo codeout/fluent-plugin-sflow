@@ -630,10 +630,10 @@ static void decodeLinkLayer(SFSample *sample)
 
   if((end - ptr) < NFT_ETHHDR_SIZ) return; /* not enough for an Ethernet header */
 
-  sf_log(sample,"\"dstMAC\":\"%02x%02x%02x%02x%02x%02x\",", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5]);
+  sf_log(sample,"\"dst_mac\":\"%02x%02x%02x%02x%02x%02x\",", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5]);
   memcpy(sample->eth_dst, ptr, 6);
   ptr += 6;
-  sf_log(sample,"\"srcMAC\":\"%02x%02x%02x%02x%02x%02x\",", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5]);
+  sf_log(sample,"\"src_mac\":\"%02x%02x%02x%02x%02x%02x\",", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5]);
   memcpy(sample->eth_src, ptr, 6);
   ptr += 6;
   type_len = (ptr[0] << 8) + ptr[1];
@@ -650,8 +650,8 @@ static void decodeLinkLayer(SFSample *sample)
     /* |   pri  | c |         vlan-id        | */
     /*  ------------------------------------- */
     /* [priority = 3bits] [Canonical Format Flag = 1bit] [vlan-id = 12 bits] */
-    sf_log(sample,"\"decodedVLAN\":%u,", vlan);
-    sf_log(sample,"\"decodedPriority\":%u,", priority);
+    sf_log(sample,"\"decoded_vlan\":%u,", vlan);
+    sf_log(sample,"\"decoded_priority\":%u,", priority);
     sample->in_vlan = vlan;
     /* now get the type_len again (next two bytes) */
     type_len = (ptr[0] << 8) + ptr[1];
@@ -683,7 +683,7 @@ static void decodeLinkLayer(SFSample *sample)
       if(ptr[0] != 0 ||
 	 ptr[1] != 0 ||
 	 ptr[2] != 0) {
-	sf_log(sample,"\"VSNAP_OUI\":\"%02X-%02X-%02X\",", ptr[0], ptr[1], ptr[2]);
+	sf_log(sample,"\"vsnap_oui\":\"%02X-%02X-%02X\",", ptr[0], ptr[1], ptr[2]);
 	return; /* no further decode for vendor-specific protocol */
       }
       ptr += 3;
@@ -814,15 +814,15 @@ static void decode80211MAC(SFSample *sample)
       }
 
       if(srcMAC) {
-	sf_log(sample,"\"srcMAC\":\"%02x%02x%02x%02x%02x%02x\",", srcMAC[0], srcMAC[1], srcMAC[2], srcMAC[3], srcMAC[4], srcMAC[5]);
+	sf_log(sample,"\"src_mac\":\"%02x%02x%02x%02x%02x%02x\",", srcMAC[0], srcMAC[1], srcMAC[2], srcMAC[3], srcMAC[4], srcMAC[5]);
 	memcpy(sample->eth_src, srcMAC, 6);
       }
       if(dstMAC) {
-	sf_log(sample,"\"dstMAC\":\"%02x%02x%02x%02x%02x%02x\",", dstMAC[0], dstMAC[1], dstMAC[2], dstMAC[3], dstMAC[4], dstMAC[5]);
+	sf_log(sample,"\"dst_mac\":\"%02x%02x%02x%02x%02x%02x\",", dstMAC[0], dstMAC[1], dstMAC[2], dstMAC[3], dstMAC[4], dstMAC[5]);
 	memcpy(sample->eth_dst, srcMAC, 6);
       }
-      if(txMAC) sf_log(sample,"\"txMAC\":\"%02x%02x%02x%02x%02x%02x\",", txMAC[0], txMAC[1], txMAC[2], txMAC[3], txMAC[4], txMAC[5]);
-      if(rxMAC) sf_log(sample,"\"rxMAC\":\"%02x%02x%02x%02x%02x%02x\",", rxMAC[0], rxMAC[1], rxMAC[2], rxMAC[3], rxMAC[4], rxMAC[5]);
+      if(txMAC) sf_log(sample,"\"tx_mac\":\"%02x%02x%02x%02x%02x%02x\",", txMAC[0], txMAC[1], txMAC[2], txMAC[3], txMAC[4], txMAC[5]);
+      if(rxMAC) sf_log(sample,"\"rx_mac\":\"%02x%02x%02x%02x%02x%02x\",", rxMAC[0], rxMAC[1], rxMAC[2], rxMAC[3], rxMAC[4], rxMAC[5]);
     }
   }
 }
@@ -843,8 +843,8 @@ static void decodeIPLayer4(SFSample *sample, uint8_t *ptr) {
     {
       struct myicmphdr icmp;
       memcpy(&icmp, ptr, sizeof(icmp));
-      sf_log(sample,"\"ICMPType\":%u,", icmp.type);
-      sf_log(sample,"\"ICMPCode\":%u,", icmp.code);
+      sf_log(sample,"\"icmp_type\":%u,", icmp.type);
+      sf_log(sample,"\"icmp_code\":%u,", icmp.code);
       sample->dcd_sport = icmp.type;
       sample->dcd_dport = icmp.code;
       sample->offsetToPayload = ptr + sizeof(icmp) - sample->header;
@@ -858,9 +858,9 @@ static void decodeIPLayer4(SFSample *sample, uint8_t *ptr) {
       sample->dcd_sport = ntohs(tcp.th_sport);
       sample->dcd_dport = ntohs(tcp.th_dport);
       sample->dcd_tcpFlags = tcp.th_flags;
-      sf_log(sample,"\"TCPSrcPort\":%u,", sample->dcd_sport);
-      sf_log(sample,"\"TCPDstPort\":%u,",sample->dcd_dport);
-      sf_log(sample,"\"TCPFlags\":%u,", sample->dcd_tcpFlags);
+      sf_log(sample,"\"tcp_src_port\":%u,", sample->dcd_sport);
+      sf_log(sample,"\"tcp_dst_port\":%u,",sample->dcd_dport);
+      sf_log(sample,"\"tcp_flags\":%u,", sample->dcd_tcpFlags);
       headerBytes = (tcp.th_off_and_unused >> 4) * 4;
       ptr += headerBytes;
       sample->offsetToPayload = ptr - sample->header;
@@ -873,9 +873,9 @@ static void decodeIPLayer4(SFSample *sample, uint8_t *ptr) {
       sample->dcd_sport = ntohs(udp.uh_sport);
       sample->dcd_dport = ntohs(udp.uh_dport);
       sample->udp_pduLen = ntohs(udp.uh_ulen);
-      sf_log(sample,"\"UDPSrcPort\":%u,", sample->dcd_sport);
-      sf_log(sample,"\"UDPDstPort\":%u,", sample->dcd_dport);
-      sf_log(sample,"\"UDPBytes\":%u,", sample->udp_pduLen);
+      sf_log(sample,"\"udp_src_port\":%u,", sample->dcd_sport);
+      sf_log(sample,"\"udp_dst_port\":%u,", sample->dcd_dport);
+      sf_log(sample,"\"udp_bytes\":%u,", sample->udp_pduLen);
       sample->offsetToPayload = ptr + sizeof(udp) - sample->header;
     }
     break;
@@ -913,16 +913,16 @@ static void decodeIPV4(SFSample *sample)
     sample->dcd_ipTTL = ip.ttl;
     sf_log(sample,"\"ip.tot_len\":%d,", ntohs(ip.tot_len));
     /* Log out the decoded IP fields */
-    sf_log(sample,"\"srcIP\":\"%s\",", printAddress(&sample->ipsrc, buf));
-    sf_log(sample,"\"dstIP\":\"%s\",", printAddress(&sample->ipdst, buf));
-    sf_log(sample,"\"IPProtocol\":%u,", sample->dcd_ipProtocol);
-    sf_log(sample,"\"IPTOS\":%u,", sample->dcd_ipTos);
-    sf_log(sample,"\"IPTTL\":%u,", sample->dcd_ipTTL);
-    sf_log(sample,"\"IPID\":%u,", ip.id);
+    sf_log(sample,"\"src_ip\":\"%s\",", printAddress(&sample->ipsrc, buf));
+    sf_log(sample,"\"dst_ip\":\"%s\",", printAddress(&sample->ipdst, buf));
+    sf_log(sample,"\"ip_protocol\":%u,", sample->dcd_ipProtocol);
+    sf_log(sample,"\"ip_tos\":%u,", sample->dcd_ipTos);
+    sf_log(sample,"\"ip_ttl\":%u,", sample->dcd_ipTTL);
+    sf_log(sample,"\"ip_id\":%u,", ip.id);
     /* check for fragments */
     sample->ip_fragmentOffset = ntohs(ip.frag_off) & 0x1FFF;
     if(sample->ip_fragmentOffset > 0) {
-      sf_log(sample,"\"IPFragmentOffset\":%u,", sample->ip_fragmentOffset);
+      sf_log(sample,"\"ip_fragment_offset\":%u,", sample->ip_fragmentOffset);
     }
     else {
       /* advance the pointer to the next protocol layer */
@@ -964,21 +964,21 @@ static void decodeIPV6(SFSample *sample)
 
     /* get the tos (priority) */
     sample->dcd_ipTos = *ptr++ & 15;
-    sf_log(sample,"\"IPTOS\":%u,", sample->dcd_ipTos);
+    sf_log(sample,"\"ip_tos\":%u,", sample->dcd_ipTos);
     /* 24-bit label */
     label = *ptr++;
     label <<= 8;
     label += *ptr++;
     label <<= 8;
     label += *ptr++;
-    sf_log(sample,"\"IP6_label\":\"0x%lx\",", label);
+    sf_log(sample,"\"ip6_label\":\"0x%lx\",", label);
     /* payload */
     payloadLen = (ptr[0] << 8) + ptr[1];
     ptr += 2;
     /* if payload is zero, that implies a jumbo payload */
     if(payloadLen == 0) {
       /* FIXME: Disable for now
-      sf_log(sample,"IPV6_payloadLen <jumbo>\n"); */
+      sf_log(sample,"ipv6_payload_len <jumbo>\n"); */
     } else sf_log(sample,"\"ipv6_payload_len\":%u,", payloadLen);
 
     /* next header */
@@ -986,18 +986,18 @@ static void decodeIPV6(SFSample *sample)
 
     /* TTL */
     sample->dcd_ipTTL = *ptr++;
-    sf_log(sample,"\"IPTTL\":%u,", sample->dcd_ipTTL);
+    sf_log(sample,"\"ip_ttl\":%u,", sample->dcd_ipTTL);
 
     {/* src and dst address */
       char buf[101];
       sample->ipsrc.type = SFLADDRESSTYPE_IP_V6;
       memcpy(&sample->ipsrc.address, ptr, 16);
       ptr +=16;
-      sf_log(sample,"\"srcIP6\":\"%s\",", printAddress(&sample->ipsrc, buf));
+      sf_log(sample,"\"src_ip6\":\"%s\",", printAddress(&sample->ipsrc, buf));
       sample->ipdst.type = SFLADDRESSTYPE_IP_V6;
       memcpy(&sample->ipdst.address, ptr, 16);
       ptr +=16;
-      sf_log(sample,"\"dstIP6\":\"%s\",", printAddress(&sample->ipdst, buf));
+      sf_log(sample,"\"dst_ip6\":\"%s\",", printAddress(&sample->ipdst, buf));
     }
 
     /* skip over some common header extensions...
@@ -1009,7 +1009,7 @@ static void decodeIPV6(SFSample *sample)
 	  nextHeader == 51 || /* auth */
 	  nextHeader == 60) { /* destination options */
       uint32_t optionLen, skip;
-      sf_log(sample,"\"IP6HeaderExtension: %d,", nextHeader);
+      sf_log(sample,"\"ip6_header_extension\":%d,", nextHeader);
       nextHeader = ptr[0];
       optionLen = 8 * (ptr[1] + 1);  /* second byte gives option len in 8-byte chunks, not counting first 8 */
       skip = optionLen - 2;
@@ -1020,7 +1020,7 @@ static void decodeIPV6(SFSample *sample)
     /* now that we have eliminated the extension headers, nextHeader should have what we want to
        remember as the ip protocol... */
     sample->dcd_ipProtocol = nextHeader;
-    sf_log(sample,"\"IPProtocol\":%u,", sample->dcd_ipProtocol);
+    sf_log(sample,"\"ip_protocol\":%u,", sample->dcd_ipProtocol);
     decodeIPLayer4(sample, ptr);
   }
 }
@@ -1544,9 +1544,9 @@ static void readExtendedRouter(SFSample *sample)
 
   sample->extended_data_tag |= SASAMPLE_EXTENDED_DATA_ROUTER;
 
-  sf_log(sample,"\"nextHop\":\"%s\",", printAddress(&sample->nextHop, buf));
-  sf_log(sample,"\"srcSubnetMask\":%u,", sample->srcMask);
-  sf_log(sample,"\"dstSubnetMask\":%u,", sample->dstMask);
+  sf_log(sample,"\"next_hop\":\"%s\",", printAddress(&sample->nextHop, buf));
+  sf_log(sample,"\"src_subnet_mask\":%u,", sample->srcMask);
+  sf_log(sample,"\"dst_subnet_mask\":%u,", sample->dstMask);
 }
 
 /*_________________---------------------------__________________
@@ -1661,7 +1661,7 @@ static void readExtendedGateway(SFSample *sample)
   if(sample->communities_len > 0) {
     uint32_t j = 0;
     for(; j < sample->communities_len; j++) {
-      if(j == 0) sf_log(sample,"\"BGP_communities\":\"");
+      if(j == 0) sf_log(sample,"\"bgp_communities\":\"");
       else sf_log(sample,"-");
       sf_log(sample,"%u", ntohl(sample->communities[j]));
     }
@@ -1669,7 +1669,7 @@ static void readExtendedGateway(SFSample *sample)
   }
 
   sample->localpref = getData32(sample);
-  sf_log(sample,"\"BGP_localpref\":%u,", sample->localpref);
+  sf_log(sample,"\"bgp_localpref\":%u,", sample->localpref);
 
 }
 
@@ -1916,11 +1916,11 @@ static void readExtendedWifiRx(SFSample *sample)
   uint8_t *bssid;
   char ssid[SFL_MAX_SSID_LEN+1];
   if(getString(sample, ssid, SFL_MAX_SSID_LEN) > 0) {
-    sf_log(sample,"\"rx_SSID\":\"%s\",", ssid);
+    sf_log(sample,"\"rx_ssid\":\"%s\",", ssid);
   }
 
   bssid = (uint8_t *)sample->datap;
-  sf_log(sample,"\"rx_BSSID\":\"");
+  sf_log(sample,"\"rx_bssid\":\"");
   for(i = 0; i < 6; i++) sf_log(sample,"%02x", bssid[i]);
   sf_log(sample,"\",");
   skipBytes(sample, 6);
@@ -1930,7 +1930,7 @@ static void readExtendedWifiRx(SFSample *sample)
   sf_log_next64(sample, "rx_speed");
   sf_log_next32(sample, "rx_rsni");
   sf_log_next32(sample, "rx_rcpi");
-  sf_log_next32(sample, "rx_packet_uS");
+  sf_log_next32(sample, "rx_packet_us");
 }
 
 /*_________________---------------------------__________________
@@ -1944,22 +1944,22 @@ static void readExtendedWifiTx(SFSample *sample)
   uint8_t *bssid;
   char ssid[SFL_MAX_SSID_LEN+1];
   if(getString(sample, ssid, SFL_MAX_SSID_LEN) > 0) {
-    sf_log(sample,"\"tx_SSID\":\"%s\",", ssid);
+    sf_log(sample,"\"tx_ssid\":\"%s\",", ssid);
   }
 
   bssid = (uint8_t *)sample->datap;
-  sf_log(sample,"\"tx_BSSID\":\"");
+  sf_log(sample,"\"tx_bssid\":\"");
   for(i = 0; i < 6; i++) sf_log(sample,"%02x", bssid[i]);
   sf_log(sample,"\",");
   skipBytes(sample, 6);
 
   sf_log_next32(sample, "tx_version");
   sf_log_next32(sample, "tx_transmissions");
-  sf_log_next32(sample, "tx_packet_uS");
-  sf_log_next32(sample, "tx_retrans_uS");
+  sf_log_next32(sample, "tx_packet_us");
+  sf_log_next32(sample, "tx_retrans_us");
   sf_log_next32(sample, "tx_channel");
   sf_log_next64(sample, "tx_speed");
-  sf_log_next32(sample, "tx_power_mW");
+  sf_log_next32(sample, "tx_power_mw");
 }
 
 /*_________________---------------------------__________________
@@ -1987,23 +1987,23 @@ static void readExtendedAggregation(SFSample *sample)
 static void readFlowSample_header(SFSample *sample)
 {
   sample->headerProtocol = getData32(sample);
-  sf_log(sample,"\"headerProtocol\":%u,", sample->headerProtocol);
+  sf_log(sample,"\"header_protocol\":%u,", sample->headerProtocol);
   sample->sampledPacketSize = getData32(sample);
-  sf_log(sample,"\"sampledPacketSize\":%u,", sample->sampledPacketSize);
+  sf_log(sample,"\"sampled_packet_size\":%u,", sample->sampledPacketSize);
   if(sample->datagramVersion > 4) {
     /* stripped count introduced in sFlow version 5 */
     sample->stripped = getData32(sample);
-    sf_log(sample,"\"strippedBytes\":%u,", sample->stripped);
+    sf_log(sample,"\"stripped_bytes\":%u,", sample->stripped);
   }
   sample->headerLen = getData32(sample);
-  sf_log(sample,"\"headerLen\":%u,", sample->headerLen);
+  sf_log(sample,"\"header_len\":%u,", sample->headerLen);
   
   sample->header = (uint8_t *)sample->datap; /* just point at the header */
   skipBytes(sample, sample->headerLen);
   {
     char scratch[2000];
     printHex(sample->header, sample->headerLen, scratch, 2000, 0, 2000);
-    sf_log(sample,"\"headerBytes\":\"%s\",", scratch);
+    sf_log(sample,"\"header_bytes\":\"%s\",", scratch);
   }
   
   switch(sample->headerProtocol) {
@@ -2044,12 +2044,12 @@ static void readFlowSample_header(SFSample *sample)
   
   if(sample->gotIPV4) {
     /* report the size of the original IPPdu (including the IP header) */
-    sf_log(sample,"\"IPSize\":%d,",  sample->sampledPacketSize - sample->stripped - sample->offsetToIPV4);
+    sf_log(sample,"\"ip_size\":%d,",  sample->sampledPacketSize - sample->stripped - sample->offsetToIPV4);
     decodeIPV4(sample);
   }
   else if(sample->gotIPV6) {
     /* report the size of the original IPPdu (including the IP header) */
-    sf_log(sample,"\"IPSize\":%d,",  sample->sampledPacketSize - sample->stripped - sample->offsetToIPV6);
+    sf_log(sample,"\"ip_size\":%d,",  sample->sampledPacketSize - sample->stripped - sample->offsetToIPV6);
     decodeIPV6(sample);
   }
 
@@ -2093,23 +2093,23 @@ static void readFlowSample_IPv4(SFSample *sample, char *prefix)
     SFLSampled_ipv4 nfKey;
     memcpy(&nfKey, sample->header, sizeof(nfKey));
     sample->sampledPacketSize = ntohl(nfKey.length);
-    sf_log(sample,"\"%ssampledPacketSize\":%u,", prefix, sample->sampledPacketSize); 
-    sf_log(sample,"\"%sIPSize\":%u,", prefix,  sample->sampledPacketSize);
+    sf_log(sample,"\"%ssampled_packet_size\":%u,", prefix, sample->sampledPacketSize); 
+    sf_log(sample,"\"%sip_size\":%u,", prefix,  sample->sampledPacketSize);
     sample->ipsrc.type = SFLADDRESSTYPE_IP_V4;
     sample->ipsrc.address.ip_v4 = nfKey.src_ip;
     sample->ipdst.type = SFLADDRESSTYPE_IP_V4;
     sample->ipdst.address.ip_v4 = nfKey.dst_ip;
     sample->dcd_ipProtocol = ntohl(nfKey.protocol);
     sample->dcd_ipTos = ntohl(nfKey.tos);
-    sf_log(sample,"\"%ssrcIP\":\"%s\",", prefix, printAddress(&sample->ipsrc, buf));
-    sf_log(sample,"\"%sdstIP\":\"%s\",", prefix, printAddress(&sample->ipdst, buf));
-    sf_log(sample,"\"%sIPProtocol\":%u,", prefix, sample->dcd_ipProtocol);
-    sf_log(sample,"\"%sIPTOS\":%u,", prefix, sample->dcd_ipTos);
+    sf_log(sample,"\"%ssrc_ip\":\"%s\",", prefix, printAddress(&sample->ipsrc, buf));
+    sf_log(sample,"\"%sdst_ip\":\"%s\",", prefix, printAddress(&sample->ipdst, buf));
+    sf_log(sample,"\"%sip_protocol\":%u,", prefix, sample->dcd_ipProtocol);
+    sf_log(sample,"\"%sip_tos\":%u,", prefix, sample->dcd_ipTos);
     sample->dcd_sport = ntohl(nfKey.src_port);
     sample->dcd_dport = ntohl(nfKey.dst_port);
     switch(sample->dcd_ipProtocol) {
     case 1: /* ICMP */
-      sf_log(sample,"\"%sICMPType\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%sicmp_type\":%u,", prefix, sample->dcd_dport);
       /* not sure about the dest port being icmp type
 	 - might be that src port is icmp type and dest
 	 port is icmp code.  Still, have seen some
@@ -2118,14 +2118,14 @@ static void readFlowSample_IPv4(SFSample *sample, char *prefix)
 	 assume that the destination port has the type */
       break;
     case 6: /* TCP */
-      sf_log(sample,"\"%sTCPSrcPort\":%u,", prefix, sample->dcd_sport);
-      sf_log(sample,"\"%sTCPDstPort\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%stcp_src_port\":%u,", prefix, sample->dcd_sport);
+      sf_log(sample,"\"%stcp_dst_port\":%u,", prefix, sample->dcd_dport);
       sample->dcd_tcpFlags = ntohl(nfKey.tcp_flags);
-      sf_log(sample,"\"%sTCPFlags\":%u,", prefix, sample->dcd_tcpFlags);
+      sf_log(sample,"\"%stcp_flags\":%u,", prefix, sample->dcd_tcpFlags);
       break;
     case 17: /* UDP */
-      sf_log(sample,"\"%sUDPSrcPort\":%u,", prefix, sample->dcd_sport);
-      sf_log(sample,"\"%sUDPDstPort\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%sudp_src_port\":%u,", prefix, sample->dcd_sport);
+      sf_log(sample,"\"%sudp_dst_port\":%u,", prefix, sample->dcd_dport);
       break;
     default: /* some other protcol */
       break;
@@ -2148,22 +2148,22 @@ static void readFlowSample_IPv6(SFSample *sample, char *prefix)
     SFLSampled_ipv6 nfKey6;
     memcpy(&nfKey6, sample->header, sizeof(nfKey6));
     sample->sampledPacketSize = ntohl(nfKey6.length);
-    sf_log(sample,"\"%ssampledPacketSize\":%u,", prefix, sample->sampledPacketSize); 
-    sf_log(sample,"\"%sIPSize\":%u,", prefix, sample->sampledPacketSize); 
+    sf_log(sample,"\"%ssampled_packet_size\":%u,", prefix, sample->sampledPacketSize); 
+    sf_log(sample,"\"%sip_size\":%u,", prefix, sample->sampledPacketSize); 
     sample->ipsrc.type = SFLADDRESSTYPE_IP_V6;
     memcpy(&sample->ipsrc.address.ip_v6, &nfKey6.src_ip, 16);
     sample->ipdst.type = SFLADDRESSTYPE_IP_V6;
     memcpy(&sample->ipdst.address.ip_v6, &nfKey6.dst_ip, 16);
     sample->dcd_ipProtocol = ntohl(nfKey6.protocol);
-    sf_log(sample,"\"%ssrcIP6\":\"%s\",", prefix, printAddress(&sample->ipsrc, buf));
-    sf_log(sample,"\"%sdstIP6\":\"%s\",", prefix, printAddress(&sample->ipdst, buf));
-    sf_log(sample,"\"%sIPProtocol\":%u,", prefix, sample->dcd_ipProtocol);
+    sf_log(sample,"\"%ssrc_ip6\":\"%s\",", prefix, printAddress(&sample->ipsrc, buf));
+    sf_log(sample,"\"%sdst_ip6\":\"%s\",", prefix, printAddress(&sample->ipdst, buf));
+    sf_log(sample,"\"%sip_protocol\":%u,", prefix, sample->dcd_ipProtocol);
     sf_log(sample,"\"%spriority\":%u,", prefix, ntohl(nfKey6.priority));
     sample->dcd_sport = ntohl(nfKey6.src_port);
     sample->dcd_dport = ntohl(nfKey6.dst_port);
     switch(sample->dcd_ipProtocol) {
     case 1: /* ICMP */
-      sf_log(sample,"\"%sICMPType\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%sicmp_type\":%u,", prefix, sample->dcd_dport);
       /* not sure about the dest port being icmp type
 	 - might be that src port is icmp type and dest
 	 port is icmp code.  Still, have seen some
@@ -2172,14 +2172,14 @@ static void readFlowSample_IPv6(SFSample *sample, char *prefix)
 	 assume that the destination port has the type */
       break;
     case 6: /* TCP */
-      sf_log(sample,"\"%sTCPSrcPort\":%u,", prefix, sample->dcd_sport);
-      sf_log(sample,"\"%sTCPDstPort\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%stcp_src_port\":%u,", prefix, sample->dcd_sport);
+      sf_log(sample,"\"%stcp_dst_port\":%u,", prefix, sample->dcd_dport);
       sample->dcd_tcpFlags = ntohl(nfKey6.tcp_flags);
-      sf_log(sample,"\"%sTCPFlags\":%u,", prefix, sample->dcd_tcpFlags);
+      sf_log(sample,"\"%stcp_flags\":%u,", prefix, sample->dcd_tcpFlags);
       break;
     case 17: /* UDP */
-      sf_log(sample,"\"%sUDPSrcPort\":%u,", prefix, sample->dcd_sport);
-      sf_log(sample,"\"%sUDPDstPort\":%u,", prefix, sample->dcd_dport);
+      sf_log(sample,"\"%sudp_src_port\":%u,", prefix, sample->dcd_sport);
+      sf_log(sample,"\"%sudp_dst_port\":%u,", prefix, sample->dcd_dport);
       break;
     default: /* some other protcol */
       break;
@@ -2204,7 +2204,7 @@ static void readFlowSample_memcache(SFSample *sample)
   }
   sf_log_next32(sample, "memcache_op_nkeys");
   sf_log_next32(sample, "memcache_op_value_bytes");
-  sf_log_next32(sample, "memcache_op_duration_uS");
+  sf_log_next32(sample, "memcache_op_duration_us");
   sf_log_next32(sample, "memcache_op_status");
 }
 
@@ -2261,7 +2261,7 @@ static void readFlowSample_http(SFSample *sample, uint32_t tag)
     req_bytes = sf_log_next64(sample, "http_request_bytes");
   }
   resp_bytes = sf_log_next64(sample, "http_bytes");
-  sf_log_next32(sample, "http_duration_uS");
+  sf_log_next32(sample, "http_duration_us");
   status = sf_log_next32(sample, "http_status");
 
   if(sfConfig.outputFormat == SFLFMT_CLF) {
@@ -2313,7 +2313,7 @@ static void readFlowSample_APP(SFSample *sample)
   }
   sf_log_next64(sample, "request_bytes");
   sf_log_next64(sample, "response_bytes");
-  sf_log_next32(sample, "duration_uS");
+  sf_log_next32(sample, "duration_us");
   status32 = getData32(sample);
   if(status32 >= SFLAPP_NUM_STATUS_CODES) {
     /* FIXME: Disable for now
@@ -2482,7 +2482,7 @@ static void readExtendedDecap(SFSample *sample, char *prefix)
 static void readExtendedVNI(SFSample *sample, char *prefix)
 {
   uint32_t vni = getData32(sample);
-  sf_log(sample,"\"%sVNI\":%u,", prefix, vni);
+  sf_log(sample,"\"%svni\":%u,", prefix, vni);
 }
 
 /*_________________----------------------------__________________
@@ -2507,11 +2507,11 @@ static void readExtendedTCPInfo(SFSample *sample)
   sf_log_next32(sample, "tcpinfo_lost_pkts");
   sf_log_next32(sample, "tcpinfo_retrans_pkts");
   sf_log_next32(sample, "tcpinfo_path_mtu");
-  sf_log_next32(sample, "tcpinfo_rtt_uS");
-  sf_log_next32(sample, "tcpinfo_rtt_uS_var");
+  sf_log_next32(sample, "tcpinfo_rtt_us");
+  sf_log_next32(sample, "tcpinfo_rtt_us_var");
   sf_log_next32(sample, "tcpinfo_send_congestion_win");
   sf_log_next32(sample, "tcpinfo_reordering");
-  sf_log_next32(sample, "tcpinfo_rtt_uS_min");
+  sf_log_next32(sample, "tcpinfo_rtt_us_min");
 }
 
 /*_________________---------------------------__________________
@@ -2521,15 +2521,15 @@ static void readExtendedTCPInfo(SFSample *sample)
 
 static void readFlowSample_v2v4(SFSample *sample)
 {
-  sf_log(sample,"\"sampleType\":\"FLOWSAMPLE\",");
+  sf_log(sample,"\"sample_type\":\"flow_sample\",");
 
   sample->samplesGenerated = getData32(sample);
-  sf_log(sample,"\"sampleSequenceNo\":%u,", sample->samplesGenerated);
+  sf_log(sample,"\"sample_sequence_no\":%u,", sample->samplesGenerated);
   {
     uint32_t samplerId = getData32(sample);
     sample->ds_class = samplerId >> 24;
     sample->ds_index = samplerId & 0x00ffffff;
-    sf_log(sample,"\"sourceId\":\"%u:%u\",", sample->ds_class, sample->ds_index);
+    sf_log(sample,"\"source_id\":\"%u:%u\",", sample->ds_class, sample->ds_index);
   }
   
   sample->meanSkipCount = getData32(sample);
@@ -2537,17 +2537,17 @@ static void readFlowSample_v2v4(SFSample *sample)
   sample->dropEvents = getData32(sample);
   sample->inputPort = getData32(sample);
   sample->outputPort = getData32(sample);
-  sf_log(sample,"\"meanSkipCount\":%u,", sample->meanSkipCount);
-  sf_log(sample,"\"samplePool\":%u,", sample->samplePool);
-  sf_log(sample,"\"dropEvents\":%u,", sample->dropEvents);
-  sf_log(sample,"\"inputPort\":%u,", sample->inputPort);
+  sf_log(sample,"\"mean_skip_count\":%u,", sample->meanSkipCount);
+  sf_log(sample,"\"sample_pool\":%u,", sample->samplePool);
+  sf_log(sample,"\"drop_events\":%u,", sample->dropEvents);
+  sf_log(sample,"\"input_port\":%u,", sample->inputPort);
   if(sample->outputPort & 0x80000000) {
     /* FIXME: Disable for now
     uint32_t numOutputs = sample->outputPort & 0x7fffffff;
     if(numOutputs > 0) sf_log(sample,"outputPort multiple %d\n", numOutputs);
     else sf_log(sample,"outputPort multiple >1\n"); */
   }
-  else sf_log(sample,"\"outputPort\":%u,", sample->outputPort);
+  else sf_log(sample,"\"output_port\":%u,", sample->outputPort);
   
   sample->packet_data_tag = getData32(sample);
   
@@ -2620,11 +2620,11 @@ static void readFlowSample(SFSample *sample, int expanded)
   uint32_t num_elements, sampleLength;
   uint8_t *sampleStart;
 
-  sf_log(sample,"\"sampleType\":\"FLOWSAMPLE\",");
+  sf_log(sample,"\"sample_type\":\"flow_sample\",");
   sampleLength = getData32(sample);
   sampleStart = (uint8_t *)sample->datap;
   sample->samplesGenerated = getData32(sample);
-  sf_log(sample,"\"sampleSequenceNo\":%u,", sample->samplesGenerated);
+  sf_log(sample,"\"sample_sequence_no\":%u,", sample->samplesGenerated);
   if(expanded) {
     sample->ds_class = getData32(sample);
     sample->ds_index = getData32(sample);
@@ -2634,14 +2634,14 @@ static void readFlowSample(SFSample *sample, int expanded)
     sample->ds_class = samplerId >> 24;
     sample->ds_index = samplerId & 0x00ffffff;
   }
-  sf_log(sample,"\"sourceId\":\"%u:%u\",", sample->ds_class, sample->ds_index);
+  sf_log(sample,"\"source_id\":\"%u:%u\",", sample->ds_class, sample->ds_index);
 
   sample->meanSkipCount = getData32(sample);
   sample->samplePool = getData32(sample);
   sample->dropEvents = getData32(sample);
-  sf_log(sample,"\"meanSkipCount\":%u,", sample->meanSkipCount);
-  sf_log(sample,"\"samplePool\":%u,", sample->samplePool);
-  sf_log(sample,"\"dropEvents\":%u,", sample->dropEvents);
+  sf_log(sample,"\"mean_skip_count\":%u,", sample->meanSkipCount);
+  sf_log(sample,"\"sample_pool\":%u,", sample->samplePool);
+  sf_log(sample,"\"drop_events\":%u,", sample->dropEvents);
   if(expanded) {
     sample->inputPortFormat = getData32(sample);
     sample->inputPort = getData32(sample);
@@ -2688,7 +2688,7 @@ static void readFlowSample(SFSample *sample, int expanded)
       uint8_t *start;
       char buf[51];
       tag = sample->elementType = getData32(sample);
-      sf_log(sample,"\"flowBlock_tag\":\"%s\",", printTag(tag, buf));
+      sf_log(sample,"\"flow_block_tag\":\"%s\",", printTag(tag, buf));
       length = getData32(sample);
       start = (uint8_t *)sample->datap;
 
@@ -2781,26 +2781,26 @@ static void readFlowSample(SFSample *sample, int expanded)
 static void readCounters_generic(SFSample *sample)
 {
   /* the first part of the generic counters block is really just more info about the interface. */
-  sample->ifCounters.ifIndex = sf_log_next32(sample, "ifIndex");
-  sample->ifCounters.ifType = sf_log_next32(sample, "networkType");
-  sample->ifCounters.ifSpeed = sf_log_next64(sample, "ifSpeed");
-  sample->ifCounters.ifDirection = sf_log_next32(sample, "ifDirection");
-  sample->ifCounters.ifStatus = sf_log_next32(sample, "ifStatus");
+  sample->ifCounters.ifIndex = sf_log_next32(sample, "if_index");
+  sample->ifCounters.ifType = sf_log_next32(sample, "network_type");
+  sample->ifCounters.ifSpeed = sf_log_next64(sample, "if_speed");
+  sample->ifCounters.ifDirection = sf_log_next32(sample, "if_direction");
+  sample->ifCounters.ifStatus = sf_log_next32(sample, "if_status");
   /* the generic counters always come first */
-  sample->ifCounters.ifInOctets = sf_log_next64(sample, "ifInOctets");
-  sample->ifCounters.ifInUcastPkts = sf_log_next32(sample, "ifInUcastPkts");
-  sample->ifCounters.ifInMulticastPkts = sf_log_next32(sample, "ifInMulticastPkts");
-  sample->ifCounters.ifInBroadcastPkts = sf_log_next32(sample, "ifInBroadcastPkts");
-  sample->ifCounters.ifInDiscards = sf_log_next32(sample, "ifInDiscards");
-  sample->ifCounters.ifInErrors = sf_log_next32(sample, "ifInErrors");
-  sample->ifCounters.ifInUnknownProtos = sf_log_next32(sample, "ifInUnknownProtos");
-  sample->ifCounters.ifOutOctets = sf_log_next64(sample, "ifOutOctets");
-  sample->ifCounters.ifOutUcastPkts = sf_log_next32(sample, "ifOutUcastPkts");
-  sample->ifCounters.ifOutMulticastPkts = sf_log_next32(sample, "ifOutMulticastPkts");
-  sample->ifCounters.ifOutBroadcastPkts = sf_log_next32(sample, "ifOutBroadcastPkts");
-  sample->ifCounters.ifOutDiscards = sf_log_next32(sample, "ifOutDiscards");
-  sample->ifCounters.ifOutErrors = sf_log_next32(sample, "ifOutErrors");
-  sample->ifCounters.ifPromiscuousMode = sf_log_next32(sample, "ifPromiscuousMode");
+  sample->ifCounters.ifInOctets = sf_log_next64(sample, "if_in_octets");
+  sample->ifCounters.ifInUcastPkts = sf_log_next32(sample, "if_in_ucast_pkts");
+  sample->ifCounters.ifInMulticastPkts = sf_log_next32(sample, "if_in_multicast_pkts");
+  sample->ifCounters.ifInBroadcastPkts = sf_log_next32(sample, "if_in_broadcast_pkts");
+  sample->ifCounters.ifInDiscards = sf_log_next32(sample, "if_in_discards");
+  sample->ifCounters.ifInErrors = sf_log_next32(sample, "if_in_errors");
+  sample->ifCounters.ifInUnknownProtos = sf_log_next32(sample, "if_in_unknown_protos");
+  sample->ifCounters.ifOutOctets = sf_log_next64(sample, "if_out_octets");
+  sample->ifCounters.ifOutUcastPkts = sf_log_next32(sample, "if_out_ucast_pkts");
+  sample->ifCounters.ifOutMulticastPkts = sf_log_next32(sample, "if_out_multicast_pkts");
+  sample->ifCounters.ifOutBroadcastPkts = sf_log_next32(sample, "if_out_broadcast_pkts");
+  sample->ifCounters.ifOutDiscards = sf_log_next32(sample, "if_out_discards");
+  sample->ifCounters.ifOutErrors = sf_log_next32(sample, "if_out_errors");
+  sample->ifCounters.ifPromiscuousMode = sf_log_next32(sample, "if_promiscuous_mode");
 }
  
 /*_________________---------------------------__________________
@@ -2810,19 +2810,19 @@ static void readCounters_generic(SFSample *sample)
 
 static  void readCounters_ethernet(SFSample *sample)
 {
-  sf_log_next32(sample, "dot3StatsAlignmentErrors");
-  sf_log_next32(sample, "dot3StatsFCSErrors");
-  sf_log_next32(sample, "dot3StatsSingleCollisionFrames");
-  sf_log_next32(sample, "dot3StatsMultipleCollisionFrames");
-  sf_log_next32(sample, "dot3StatsSQETestErrors");
-  sf_log_next32(sample, "dot3StatsDeferredTransmissions");
-  sf_log_next32(sample, "dot3StatsLateCollisions");
-  sf_log_next32(sample, "dot3StatsExcessiveCollisions");
-  sf_log_next32(sample, "dot3StatsInternalMacTransmitErrors");
-  sf_log_next32(sample, "dot3StatsCarrierSenseErrors");
-  sf_log_next32(sample, "dot3StatsFrameTooLongs");
-  sf_log_next32(sample, "dot3StatsInternalMacReceiveErrors");
-  sf_log_next32(sample, "dot3StatsSymbolErrors");
+  sf_log_next32(sample, "dot3_stats_alignment_errors");
+  sf_log_next32(sample, "dot3_stats_fcserrors");
+  sf_log_next32(sample, "dot3_stats_single_collision_frames");
+  sf_log_next32(sample, "dot3_stats_multiple_collision_frames");
+  sf_log_next32(sample, "dot3_stats_sqetest_errors");
+  sf_log_next32(sample, "dot3_stats_deferred_transmissions");
+  sf_log_next32(sample, "dot3_stats_late_collisions");
+  sf_log_next32(sample, "dot3_stats_excessive_collisions");
+  sf_log_next32(sample, "dot3_stats_internal_mac_transmit_errors");
+  sf_log_next32(sample, "dot3_stats_carrier_sense_errors");
+  sf_log_next32(sample, "dot3_stats_frame_too_longs");
+  sf_log_next32(sample, "dot3_stats_internal_mac_receive_errors");
+  sf_log_next32(sample, "dot3_stats_symbol_errors");
 }	  
 
  
@@ -2833,24 +2833,24 @@ static  void readCounters_ethernet(SFSample *sample)
 
 static void readCounters_tokenring(SFSample *sample)
 {
-  sf_log_next32(sample, "dot5StatsLineErrors");
-  sf_log_next32(sample, "dot5StatsBurstErrors");
-  sf_log_next32(sample, "dot5StatsACErrors");
-  sf_log_next32(sample, "dot5StatsAbortTransErrors");
-  sf_log_next32(sample, "dot5StatsInternalErrors");
-  sf_log_next32(sample, "dot5StatsLostFrameErrors");
-  sf_log_next32(sample, "dot5StatsReceiveCongestions");
-  sf_log_next32(sample, "dot5StatsFrameCopiedErrors");
-  sf_log_next32(sample, "dot5StatsTokenErrors");
-  sf_log_next32(sample, "dot5StatsSoftErrors");
-  sf_log_next32(sample, "dot5StatsHardErrors");
-  sf_log_next32(sample, "dot5StatsSignalLoss");
-  sf_log_next32(sample, "dot5StatsTransmitBeacons");
-  sf_log_next32(sample, "dot5StatsRecoverys");
-  sf_log_next32(sample, "dot5StatsLobeWires");
-  sf_log_next32(sample, "dot5StatsRemoves");
-  sf_log_next32(sample, "dot5StatsSingles");
-  sf_log_next32(sample, "dot5StatsFreqErrors");
+  sf_log_next32(sample, "dot5_stats_line_errors");
+  sf_log_next32(sample, "dot5_stats_burst_errors");
+  sf_log_next32(sample, "dot5_stats_acerrors");
+  sf_log_next32(sample, "dot5_stats_abort_trans_errors");
+  sf_log_next32(sample, "dot5_stats_internal_errors");
+  sf_log_next32(sample, "dot5_stats_lost_frame_errors");
+  sf_log_next32(sample, "dot5_stats_receive_congestions");
+  sf_log_next32(sample, "dot5_stats_frame_copied_errors");
+  sf_log_next32(sample, "dot5_stats_token_errors");
+  sf_log_next32(sample, "dot5_stats_soft_errors");
+  sf_log_next32(sample, "dot5_stats_hard_errors");
+  sf_log_next32(sample, "dot5_stats_signal_loss");
+  sf_log_next32(sample, "dot5_stats_transmit_beacons");
+  sf_log_next32(sample, "dot5_stats_recoverys");
+  sf_log_next32(sample, "dot5_stats_lobe_wires");
+  sf_log_next32(sample, "dot5_stats_removes");
+  sf_log_next32(sample, "dot5_stats_singles");
+  sf_log_next32(sample, "dot5_stats_freq_errors");
 }
 
  
@@ -2861,20 +2861,20 @@ static void readCounters_tokenring(SFSample *sample)
 
 static void readCounters_vg(SFSample *sample)
 {
-  sf_log_next32(sample, "dot12InHighPriorityFrames");
-  sf_log_next64(sample, "dot12InHighPriorityOctets");
-  sf_log_next32(sample, "dot12InNormPriorityFrames");
-  sf_log_next64(sample, "dot12InNormPriorityOctets");
-  sf_log_next32(sample, "dot12InIPMErrors");
-  sf_log_next32(sample, "dot12InOversizeFrameErrors");
-  sf_log_next32(sample, "dot12InDataErrors");
-  sf_log_next32(sample, "dot12InNullAddressedFrames");
-  sf_log_next32(sample, "dot12OutHighPriorityFrames");
-  sf_log_next64(sample, "dot12OutHighPriorityOctets");
-  sf_log_next32(sample, "dot12TransitionIntoTrainings");
-  sf_log_next64(sample, "dot12HCInHighPriorityOctets");
-  sf_log_next64(sample, "dot12HCInNormPriorityOctets");
-  sf_log_next64(sample, "dot12HCOutHighPriorityOctets");
+  sf_log_next32(sample, "dot12_in_high_priority_frames");
+  sf_log_next64(sample, "dot12_in_high_priority_octets");
+  sf_log_next32(sample, "dot12_in_norm_priority_frames");
+  sf_log_next64(sample, "dot12_in_norm_priority_octets");
+  sf_log_next32(sample, "dot12_in_ipmerrors");
+  sf_log_next32(sample, "dot12_in_oversize_frame_errors");
+  sf_log_next32(sample, "dot12_in_data_errors");
+  sf_log_next32(sample, "dot12_in_null_addressed_frames");
+  sf_log_next32(sample, "dot12_out_high_priority_frames");
+  sf_log_next64(sample, "dot12_out_high_priority_octets");
+  sf_log_next32(sample, "dot12_transition_into_trainings");
+  sf_log_next64(sample, "dot12_hcin_high_priority_octets");
+  sf_log_next64(sample, "dot12_hcin_norm_priority_octets");
+  sf_log_next64(sample, "dot12_hcout_high_priority_octets");
 }
 
 
@@ -2889,9 +2889,9 @@ static void readCounters_vlan(SFSample *sample)
   sample->in_vlan = getData32(sample);
   sf_log(sample,"\"in_vlan\":%u,", sample->in_vlan);
   sf_log_next64(sample, "octets");
-  sf_log_next32(sample, "ucastPkts");
-  sf_log_next32(sample, "multicastPkts");
-  sf_log_next32(sample, "broadcastPkts");
+  sf_log_next32(sample, "ucast_pkts");
+  sf_log_next32(sample, "multicast_pkts");
+  sf_log_next32(sample, "broadcast_pkts");
   sf_log_next32(sample, "discards");
 }
  
@@ -2902,26 +2902,26 @@ static void readCounters_vlan(SFSample *sample)
 
 static void readCounters_80211(SFSample *sample)
 {
-  sf_log_next32(sample, "dot11TransmittedFragmentCount");
-  sf_log_next32(sample, "dot11MulticastTransmittedFrameCount");
-  sf_log_next32(sample, "dot11FailedCount");
-  sf_log_next32(sample, "dot11RetryCount");
-  sf_log_next32(sample, "dot11MultipleRetryCount");
-  sf_log_next32(sample, "dot11FrameDuplicateCount");
-  sf_log_next32(sample, "dot11RTSSuccessCount");
-  sf_log_next32(sample, "dot11RTSFailureCount");
-  sf_log_next32(sample, "dot11ACKFailureCount");
-  sf_log_next32(sample, "dot11ReceivedFragmentCount");
-  sf_log_next32(sample, "dot11MulticastReceivedFrameCount");
-  sf_log_next32(sample, "dot11FCSErrorCount");
-  sf_log_next32(sample, "dot11TransmittedFrameCount");
-  sf_log_next32(sample, "dot11WEPUndecryptableCount");
-  sf_log_next32(sample, "dot11QoSDiscardedFragmentCount");
-  sf_log_next32(sample, "dot11AssociatedStationCount");
-  sf_log_next32(sample, "dot11QoSCFPollsReceivedCount");
-  sf_log_next32(sample, "dot11QoSCFPollsUnusedCount");
-  sf_log_next32(sample, "dot11QoSCFPollsUnusableCount");
-  sf_log_next32(sample, "dot11QoSCFPollsLostCount");
+  sf_log_next32(sample, "dot11_transmitted_fragment_count");
+  sf_log_next32(sample, "dot11_multicast_transmitted_frame_count");
+  sf_log_next32(sample, "dot11_failed_count");
+  sf_log_next32(sample, "dot11_retry_count");
+  sf_log_next32(sample, "dot11_multiple_retry_count");
+  sf_log_next32(sample, "dot11_frame_duplicate_count");
+  sf_log_next32(sample, "dot11_rtssuccess_count");
+  sf_log_next32(sample, "dot11_rtsfailure_count");
+  sf_log_next32(sample, "dot11_ackfailure_count");
+  sf_log_next32(sample, "dot11_received_fragment_count");
+  sf_log_next32(sample, "dot11_multicast_received_frame_count");
+  sf_log_next32(sample, "dot11_fcserror_count");
+  sf_log_next32(sample, "dot11_transmitted_frame_count");
+  sf_log_next32(sample, "dot11_wepundecryptable_count");
+  sf_log_next32(sample, "dot11_qo_sdiscarded_fragment_count");
+  sf_log_next32(sample, "dot11_associated_station_count");
+  sf_log_next32(sample, "dot11_qo_scfpolls_received_count");
+  sf_log_next32(sample, "dot11_qo_scfpolls_unused_count");
+  sf_log_next32(sample, "dot11_qo_scfpolls_unusable_count");
+  sf_log_next32(sample, "dot11_qo_scfpolls_lost_count");
 }
  
 /*_________________---------------------------__________________
@@ -2971,7 +2971,7 @@ static void readCounters_portName(SFSample *sample)
 {
   char ifname[SFL_MAX_PORTNAME_LEN+1];
   if(getString(sample, ifname, SFL_MAX_PORTNAME_LEN) > 0) {
-    sf_log(sample,"\"ifName\":\"%s\",", ifname);
+    sf_log(sample,"\"if_name\":\"%s\",", ifname);
   }
 }
 
@@ -2982,12 +2982,12 @@ static void readCounters_portName(SFSample *sample)
 
 static void readCounters_OVSDP(SFSample *sample)
 {
-  sf_log_next32(sample, "OVS_dp_hits");
-  sf_log_next32(sample, "OVS_dp_misses");
-  sf_log_next32(sample, "OVS_dp_lost");
-  sf_log_next32(sample, "OVS_dp_mask_hits");
-  sf_log_next32(sample, "OVS_dp_flows");
-  sf_log_next32(sample, "OVS_dp_masks");
+  sf_log_next32(sample, "ovs_dp_hits");
+  sf_log_next32(sample, "ovs_dp_misses");
+  sf_log_next32(sample, "ovs_dp_lost");
+  sf_log_next32(sample, "ovs_dp_mask_hits");
+  sf_log_next32(sample, "ovs_dp_flows");
+  sf_log_next32(sample, "ovs_dp_masks");
 }
 
 /*_________________---------------------------__________________
@@ -3007,7 +3007,7 @@ static void readCounters_host_hid(SFSample *sample)
   }
   uuid = (uint8_t *)sample->datap;
   printUUID(uuid, uuidStr, 100);
-  sf_log(sample,"\"UUID\":\"%s\",", uuidStr);
+  sf_log(sample,"\"uuid\":\"%s\",", uuidStr);
   skipBytes(sample, 16);
   sf_log_next32(sample, "machine_type");
   sf_log_next32(sample, "os_name");
@@ -3027,12 +3027,12 @@ static void readCounters_adaptors(SFSample *sample)
   uint32_t i, j, ifindex, num_macs, num_adaptors = getData32(sample);
   for(i = 0; i < num_adaptors; i++) {
     ifindex = getData32(sample);
-    sf_log(sample,"\"adaptor_%u_ifIndex\":%u,", i, ifindex);
+    sf_log(sample,"\"adaptor_%u_if_index\":%u,", i, ifindex);
     num_macs = getData32(sample);
-    sf_log(sample,"\"adaptor_%u_MACs\":%u,", i, num_macs);
+    sf_log(sample,"\"adaptor_%u_macs\":%u,", i, num_macs);
     for(j = 0; j < num_macs; j++) {
       mac = (uint8_t *)sample->datap;
-      sf_log(sample,"\"adaptor_%u_MAC_%u\":\"%02x%02x%02x%02x%02x%02x\",",
+      sf_log(sample,"\"adaptor_%u_mac_%u\":\"%02x%02x%02x%02x%02x%02x\",",
 	     i, j,
 	     mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
       skipBytes(sample, 8);
@@ -3048,8 +3048,8 @@ static void readCounters_adaptors(SFSample *sample)
 
 static void readCounters_host_parent(SFSample *sample)
 {
-  sf_log_next32(sample, "parent_dsClass");
-  sf_log_next32(sample, "parent_dsIndex");
+  sf_log_next32(sample, "parent_ds_class");
+  sf_log_next32(sample, "parent_ds_index");
 }
 
 /*_________________---------------------------__________________
@@ -3147,25 +3147,25 @@ static void readCounters_host_nio(SFSample *sample)
 
 static void readCounters_host_ip(SFSample *sample)
 {
-  sf_log_next32(sample, "ipForwarding");
-  sf_log_next32(sample, "ipDefaultTTL");
-  sf_log_next32(sample, "ipInReceives");
-  sf_log_next32(sample, "ipInHdrErrors");
-  sf_log_next32(sample, "ipInAddrErrors");
-  sf_log_next32(sample, "ipForwDatagrams");
-  sf_log_next32(sample, "ipInUnknownProtos");
-  sf_log_next32(sample, "ipInDiscards");
-  sf_log_next32(sample, "ipInDelivers");
-  sf_log_next32(sample, "ipOutRequests");
-  sf_log_next32(sample, "ipOutDiscards");
-  sf_log_next32(sample, "ipOutNoRoutes");
-  sf_log_next32(sample, "ipReasmTimeout");
-  sf_log_next32(sample, "ipReasmReqds");
-  sf_log_next32(sample, "ipReasmOKs");
-  sf_log_next32(sample, "ipReasmFails");
-  sf_log_next32(sample, "ipFragOKs");
-  sf_log_next32(sample, "ipFragFails");
-  sf_log_next32(sample, "ipFragCreates");
+  sf_log_next32(sample, "ip_forwarding");
+  sf_log_next32(sample, "ip_default_ttl");
+  sf_log_next32(sample, "ip_in_receives");
+  sf_log_next32(sample, "ip_in_hdr_errors");
+  sf_log_next32(sample, "ip_in_addr_errors");
+  sf_log_next32(sample, "ip_forw_datagrams");
+  sf_log_next32(sample, "ip_in_unknown_protos");
+  sf_log_next32(sample, "ip_in_discards");
+  sf_log_next32(sample, "ip_in_delivers");
+  sf_log_next32(sample, "ip_out_requests");
+  sf_log_next32(sample, "ip_out_discards");
+  sf_log_next32(sample, "ip_out_no_routes");
+  sf_log_next32(sample, "ip_reasm_timeout");
+  sf_log_next32(sample, "ip_reasm_reqds");
+  sf_log_next32(sample, "ip_reasm_oks");
+  sf_log_next32(sample, "ip_reasm_fails");
+  sf_log_next32(sample, "ip_frag_oks");
+  sf_log_next32(sample, "ip_frag_fails");
+  sf_log_next32(sample, "ip_frag_creates");
 }
 
 /*_________________---------------------------__________________
@@ -3175,31 +3175,31 @@ static void readCounters_host_ip(SFSample *sample)
 
 static void readCounters_host_icmp(SFSample *sample)
 {
-  sf_log_next32(sample, "icmpInMsgs");
-  sf_log_next32(sample, "icmpInErrors");
-  sf_log_next32(sample, "icmpInDestUnreachs");
-  sf_log_next32(sample, "icmpInTimeExcds");
-  sf_log_next32(sample, "icmpInParamProbs");
-  sf_log_next32(sample, "icmpInSrcQuenchs");
-  sf_log_next32(sample, "icmpInRedirects");
-  sf_log_next32(sample, "icmpInEchos");
-  sf_log_next32(sample, "icmpInEchoReps");
-  sf_log_next32(sample, "icmpInTimestamps");
-  sf_log_next32(sample, "icmpInAddrMasks");
-  sf_log_next32(sample, "icmpInAddrMaskReps");
-  sf_log_next32(sample, "icmpOutMsgs");
-  sf_log_next32(sample, "icmpOutErrors");
-  sf_log_next32(sample, "icmpOutDestUnreachs");
-  sf_log_next32(sample, "icmpOutTimeExcds");
-  sf_log_next32(sample, "icmpOutParamProbs");
-  sf_log_next32(sample, "icmpOutSrcQuenchs");
-  sf_log_next32(sample, "icmpOutRedirects");
-  sf_log_next32(sample, "icmpOutEchos");
-  sf_log_next32(sample, "icmpOutEchoReps");
-  sf_log_next32(sample, "icmpOutTimestamps");
-  sf_log_next32(sample, "icmpOutTimestampReps");
-  sf_log_next32(sample, "icmpOutAddrMasks");
-  sf_log_next32(sample, "icmpOutAddrMaskReps");
+  sf_log_next32(sample, "icmp_in_msgs");
+  sf_log_next32(sample, "icmp_in_errors");
+  sf_log_next32(sample, "icmp_in_dest_unreachs");
+  sf_log_next32(sample, "icmp_in_time_excds");
+  sf_log_next32(sample, "icmp_in_param_probs");
+  sf_log_next32(sample, "icmp_in_src_quenchs");
+  sf_log_next32(sample, "icmp_in_redirects");
+  sf_log_next32(sample, "icmp_in_echos");
+  sf_log_next32(sample, "icmp_in_echo_reps");
+  sf_log_next32(sample, "icmp_in_timestamps");
+  sf_log_next32(sample, "icmp_in_addr_masks");
+  sf_log_next32(sample, "icmp_in_addr_mask_reps");
+  sf_log_next32(sample, "icmp_out_msgs");
+  sf_log_next32(sample, "icmp_out_errors");
+  sf_log_next32(sample, "icmp_out_dest_unreachs");
+  sf_log_next32(sample, "icmp_out_time_excds");
+  sf_log_next32(sample, "icmp_out_param_probs");
+  sf_log_next32(sample, "icmp_out_src_quenchs");
+  sf_log_next32(sample, "icmp_out_redirects");
+  sf_log_next32(sample, "icmp_out_echos");
+  sf_log_next32(sample, "icmp_out_echo_reps");
+  sf_log_next32(sample, "icmp_out_timestamps");
+  sf_log_next32(sample, "icmp_out_timestamp_reps");
+  sf_log_next32(sample, "icmp_out_addr_masks");
+  sf_log_next32(sample, "icmp_out_addr_mask_reps");
 }
 
 /*_________________---------------------------__________________
@@ -3209,21 +3209,21 @@ static void readCounters_host_icmp(SFSample *sample)
 
 static void readCounters_host_tcp(SFSample *sample)
 {
-  sf_log_next32(sample, "tcpRtoAlgorithm");
-  sf_log_next32(sample, "tcpRtoMin");
-  sf_log_next32(sample, "tcpRtoMax");
-  sf_log_next32(sample, "tcpMaxConn");
-  sf_log_next32(sample, "tcpActiveOpens");
-  sf_log_next32(sample, "tcpPassiveOpens");
-  sf_log_next32(sample, "tcpAttemptFails");
-  sf_log_next32(sample, "tcpEstabResets");
-  sf_log_next32(sample, "tcpCurrEstab");
-  sf_log_next32(sample, "tcpInSegs");
-  sf_log_next32(sample, "tcpOutSegs");
-  sf_log_next32(sample, "tcpRetransSegs");
-  sf_log_next32(sample, "tcpInErrs");
-  sf_log_next32(sample, "tcpOutRsts");
-  sf_log_next32(sample, "tcpInCsumErrors");
+  sf_log_next32(sample, "tcp_rto_algorithm");
+  sf_log_next32(sample, "tcp_rto_min");
+  sf_log_next32(sample, "tcp_rto_max");
+  sf_log_next32(sample, "tcp_max_conn");
+  sf_log_next32(sample, "tcp_active_opens");
+  sf_log_next32(sample, "tcp_passive_opens");
+  sf_log_next32(sample, "tcp_attempt_fails");
+  sf_log_next32(sample, "tcp_estab_resets");
+  sf_log_next32(sample, "tcp_curr_estab");
+  sf_log_next32(sample, "tcp_in_segs");
+  sf_log_next32(sample, "tcp_out_segs");
+  sf_log_next32(sample, "tcp_retrans_segs");
+  sf_log_next32(sample, "tcp_in_errs");
+  sf_log_next32(sample, "tcp_out_rsts");
+  sf_log_next32(sample, "tcp_in_csum_errors");
 }
 
 /*_________________---------------------------__________________
@@ -3233,13 +3233,13 @@ static void readCounters_host_tcp(SFSample *sample)
 
 static void readCounters_host_udp(SFSample *sample)
 {
-  sf_log_next32(sample, "udpInDatagrams");
-  sf_log_next32(sample, "udpNoPorts");
-  sf_log_next32(sample, "udpInErrors");
-  sf_log_next32(sample, "udpOutDatagrams");
-  sf_log_next32(sample, "udpRcvbufErrors");
-  sf_log_next32(sample, "udpSndbufErrors");
-  sf_log_next32(sample, "udpInCsumErrors");
+  sf_log_next32(sample, "udp_in_datagrams");
+  sf_log_next32(sample, "udp_no_ports");
+  sf_log_next32(sample, "udp_in_errors");
+  sf_log_next32(sample, "udp_out_datagrams");
+  sf_log_next32(sample, "udp_rcvbuf_errors");
+  sf_log_next32(sample, "udp_sndbuf_errors");
+  sf_log_next32(sample, "udp_in_csum_errors");
 }
 
 /*_________________-----------------------------__________________
@@ -3264,8 +3264,8 @@ static void readCounters_host_vnode(SFSample *sample)
 static void readCounters_host_vcpu(SFSample *sample)
 {
   sf_log_next32(sample, "vcpu_state");
-  sf_log_next32(sample, "vcpu_cpu_mS");
-  sf_log_next32(sample, "vcpu_cpuCount");
+  sf_log_next32(sample, "vcpu_cpu_m_s");
+  sf_log_next32(sample, "vcpu_cpu_count");
 }
 
 /*_________________----------------------------__________________
@@ -3276,7 +3276,7 @@ static void readCounters_host_vcpu(SFSample *sample)
 static void readCounters_host_vmem(SFSample *sample)
 {
   sf_log_next64(sample, "vmem_memory");
-  sf_log_next64(sample, "vmem_maxMemory");
+  sf_log_next64(sample, "vmem_max_memory");
 }
 
 /*_________________----------------------------__________________
@@ -3322,13 +3322,13 @@ static void readCounters_host_gpu_nvml(SFSample *sample)
 {
   sf_log_next32(sample, "nvml_device_count");
   sf_log_next32(sample, "nvml_processes");
-  sf_log_next32(sample, "nvml_gpu_mS");
-  sf_log_next32(sample, "nvml_mem_mS");
+  sf_log_next32(sample, "nvml_gpu_m_s");
+  sf_log_next32(sample, "nvml_mem_m_s");
   sf_log_next64(sample, "nvml_mem_bytes_total");
   sf_log_next64(sample, "nvml_mem_bytes_free");
   sf_log_next32(sample, "nvml_ecc_errors");
-  sf_log_next32(sample, "nvml_energy_mJ");
-  sf_log_next32(sample, "nvml_temperature_C");
+  sf_log_next32(sample, "nvml_energy_m_j");
+  sf_log_next32(sample, "nvml_temperature_c");
   sf_log_next32(sample, "nvml_fan_speed_pc");
 }
 
@@ -3477,11 +3477,11 @@ static void readCounters_http(SFSample *sample)
   sf_log_next32(sample, "http_method_trace_count");
   sf_log_next32(sample, "http_methd_connect_count");
   sf_log_next32(sample, "http_method_other_count");
-  sf_log_next32(sample, "http_status_1XX_count");
-  sf_log_next32(sample, "http_status_2XX_count");
-  sf_log_next32(sample, "http_status_3XX_count");
-  sf_log_next32(sample, "http_status_4XX_count");
-  sf_log_next32(sample, "http_status_5XX_count");
+  sf_log_next32(sample, "http_status_1_xx_count");
+  sf_log_next32(sample, "http_status_2_xx_count");
+  sf_log_next32(sample, "http_status_3_xx_count");
+  sf_log_next32(sample, "http_status_4_xx_count");
+  sf_log_next32(sample, "http_status_5_xx_count");
   sf_log_next32(sample, "http_status_other_count");
 }
 
@@ -3522,11 +3522,11 @@ static void readCounters_JMX(SFSample *sample, uint32_t length)
   sf_log_next64(sample, "non_heap_mem_committed");
   sf_log_next64(sample, "non_heap_mem_max");
   sf_log_next32(sample, "gc_count");
-  sf_log_next32(sample, "gc_mS");
+  sf_log_next32(sample, "gc_m_s");
   sf_log_next32(sample, "classes_loaded");
   sf_log_next32(sample, "classes_total");
   sf_log_next32(sample, "classes_unloaded");
-  sf_log_next32(sample, "compilation_mS");
+  sf_log_next32(sample, "compilation_m_s");
   sf_log_next32(sample, "threads_live");
   sf_log_next32(sample, "threads_daemon");
   sf_log_next32(sample, "threads_started");
@@ -3547,17 +3547,17 @@ static void readCounters_APP(SFSample *sample)
   if(getString(sample, application, SFLAPP_MAX_APPLICATION_LEN) > 0) {
     sf_log(sample,"\"application\":\"%s\",", application);
   }
-  sf_log_next32(sample, "status_OK");
-  sf_log_next32(sample, "errors_OTHER");
-  sf_log_next32(sample, "errors_TIMEOUT");
-  sf_log_next32(sample, "errors_INTERNAL_ERROR");
-  sf_log_next32(sample, "errors_BAD_REQUEST");
-  sf_log_next32(sample, "errors_FORBIDDEN");
-  sf_log_next32(sample, "errors_TOO_LARGE");
-  sf_log_next32(sample, "errors_NOT_IMPLEMENTED");
-  sf_log_next32(sample, "errors_NOT_FOUND");
-  sf_log_next32(sample, "errors_UNAVAILABLE");
-  sf_log_next32(sample, "errors_UNAUTHORIZED");
+  sf_log_next32(sample, "status_ok");
+  sf_log_next32(sample, "errors_other");
+  sf_log_next32(sample, "errors_timeout");
+  sf_log_next32(sample, "errors_internal_error");
+  sf_log_next32(sample, "errors_bad_request");
+  sf_log_next32(sample, "errors_forbidden");
+  sf_log_next32(sample, "errors_too_large");
+  sf_log_next32(sample, "errors_not_implemented");
+  sf_log_next32(sample, "errors_not_found");
+  sf_log_next32(sample, "errors_unavailable");
+  sf_log_next32(sample, "errors_unauthorized");
 }
 
 /*_________________----------------------------__________________
@@ -3631,22 +3631,22 @@ static void readCounters_VDI(SFSample *sample)
 static void readCounters_LACP(SFSample *sample)
 {
   SFLLACP_portState portState;
-  sf_log_nextMAC(sample, "actorSystemID");
-  sf_log_nextMAC(sample, "partnerSystemID");
-  sf_log_next32(sample, "attachedAggID");
+  sf_log_nextMAC(sample, "actor_system_id");
+  sf_log_nextMAC(sample, "partner_system_id");
+  sf_log_next32(sample, "attached_agg_id");
   portState.all = getData32_nobswap(sample);
-  sf_log(sample,"\"actorAdminPortState\":%u,", portState.v.actorAdmin);
-  sf_log(sample,"\"actorOperPortState\":%u,", portState.v.actorOper);
-  sf_log(sample,"\"partnerAdminPortState\":%u,", portState.v.partnerAdmin);
-  sf_log(sample,"\"partnerOperPortState\":%u,", portState.v.partnerOper);
-  sf_log_next32(sample, "LACPDUsRx");
-  sf_log_next32(sample, "markerPDUsRx");
-  sf_log_next32(sample, "markerResponsePDUsRx");
-  sf_log_next32(sample, "unknownRx");
-  sf_log_next32(sample, "illegalRx");
-  sf_log_next32(sample, "LACPDUsTx");
-  sf_log_next32(sample, "markerPDUsTx");
-  sf_log_next32(sample, "markerResponsePDUsTx");
+  sf_log(sample,"\"actor_admin_port_state\":%u,", portState.v.actorAdmin);
+  sf_log(sample,"\"actor_oper_port_state\":%u,", portState.v.actorOper);
+  sf_log(sample,"\"partner_admin_port_state\":%u,", portState.v.partnerAdmin);
+  sf_log(sample,"\"partner_oper_port_state\":%u,", portState.v.partnerOper);
+  sf_log_next32(sample, "lac_pdus_rx");
+  sf_log_next32(sample, "marker_pdus_rx");
+  sf_log_next32(sample, "marker_response_pdus_rx");
+  sf_log_next32(sample, "unknown_rx");
+  sf_log_next32(sample, "illegal_rx");
+  sf_log_next32(sample, "lac_pdus_tx");
+  sf_log_next32(sample, "marker_pdus_tx");
+  sf_log_next32(sample, "marker_response_pdus_tx");
 }
 
 /*_________________----------------------------__________________
@@ -3684,22 +3684,22 @@ static void readCounters_SFP(SFSample *sample)
 
 static void readCountersSample_v2v4(SFSample *sample)
 {
-  sf_log(sample,"\"sampleType\":\"COUNTERSSAMPLE\",");
+  sf_log(sample,"\"sample_type\":\"counters_sample\",");
   sample->samplesGenerated = getData32(sample);
-  sf_log(sample,"\"sampleSequenceNo\":%u,", sample->samplesGenerated);
+  sf_log(sample,"\"sample_sequence_no\":%u,", sample->samplesGenerated);
   {
     uint32_t samplerId = getData32(sample);
     sample->ds_class = samplerId >> 24;
     sample->ds_index = samplerId & 0x00ffffff;
   }
-  sf_log(sample,"\"sourceId\":\"%u:%u\",", sample->ds_class, sample->ds_index);
+  sf_log(sample,"\"source_id\":\"%u:%u\",", sample->ds_class, sample->ds_index);
 
 
   sample->statsSamplingInterval = getData32(sample);
-  sf_log(sample,"\"statsSamplingInterval\":%u,", sample->statsSamplingInterval);
+  sf_log(sample,"\"stats_sampling_interval\":%u,", sample->statsSamplingInterval);
   /* now find out what sort of counter blocks we have here... */
   sample->counterBlockVersion = getData32(sample);
-  sf_log(sample,"\"counterBlockVersion\":%u,", sample->counterBlockVersion);
+  sf_log(sample,"\"counter_block_version\":%u,", sample->counterBlockVersion);
   
   /* first see if we should read the generic stats */
   switch(sample->counterBlockVersion) {
@@ -3738,12 +3738,12 @@ static void readCountersSample(SFSample *sample, int expanded)
   uint32_t sampleLength;
   uint32_t num_elements;
   uint8_t *sampleStart;
-  sf_log(sample,"\"sampleType\":\"COUNTERSSAMPLE\",");
+  sf_log(sample,"\"sample_type\":\"counters_sample\",");
   sampleLength = getData32(sample);
   sampleStart = (uint8_t *)sample->datap;
   sample->samplesGenerated = getData32(sample);
   
-  sf_log(sample,"\"sampleSequenceNo\":%u,", sample->samplesGenerated);
+  sf_log(sample,"\"sample_sequence_no\":%u,", sample->samplesGenerated);
   if(expanded) {
     sample->ds_class = getData32(sample);
     sample->ds_index = getData32(sample);
@@ -3753,7 +3753,7 @@ static void readCountersSample(SFSample *sample, int expanded)
     sample->ds_class = samplerId >> 24;
     sample->ds_index = samplerId & 0x00ffffff;
   }
-  sf_log(sample,"\"sourceId\":\"%u:%u\",", sample->ds_class, sample->ds_index);
+  sf_log(sample,"\"source_id\":\"%u:%u\",", sample->ds_class, sample->ds_index);
   
   num_elements = getData32(sample);
   {
@@ -3763,7 +3763,7 @@ static void readCountersSample(SFSample *sample, int expanded)
       uint8_t *start;
       char buf[51];
       tag = sample->elementType = getData32(sample);
-      sf_log(sample,"\"counterBlock_tag\":\"%s\",", printTag(tag, buf));
+      sf_log(sample,"\"counter_block_tag\":\"%s\",", printTag(tag, buf));
       length = getData32(sample);
       start = (uint8_t *)sample->datap;
       
@@ -3831,7 +3831,7 @@ static void readRTMetric(SFSample *sample)
   uint32_t sampleLength;
   uint32_t num_elements;
   uint8_t *sampleStart;
-  sf_log(sample,"\"sampleType\":\"RTMETRIC\",");
+  sf_log(sample,"\"sample_type\":\"rtmetric\",");
   sampleLength = getData32(sample);
   sampleStart = (uint8_t *)sample->datap;
   if(getString(sample, dsName, SFL_MAX_RTMETRIC_KEY_LEN) > 0) {
@@ -3901,7 +3901,7 @@ static void readRTFlow(SFSample *sample)
   uint32_t sampleLength;
   uint32_t num_elements;
   uint8_t *sampleStart;
-  sf_log(sample,"\"sampleType\":\"RTFLOW\",");
+  sf_log(sample,"\"sample_type\":\"rtflow\",");
   sampleLength = getData32(sample);
   sampleStart = (uint8_t *)sample->datap;
   if(getString(sample, dsName, SFL_MAX_RTMETRIC_KEY_LEN) > 0) {
@@ -3990,14 +3990,14 @@ static void readSFlowDatagram(SFSample *sample)
   char buf[51];
   
   /* log some datagram info */
-  sf_log(sample,"\"datagramSourceIP\":\"%s\",", printAddress(&sample->sourceIP, buf));
-  sf_log(sample,"\"datagramSize\":%u,", sample->rawSampleLen);
-  sf_log(sample,"\"unixSecondsUTC\":%u,", sample->readTimestamp);
-  if(sample->pcapTimestamp) sf_log(sample,"\"pcapTimestamp\":\"%s\",", ctime(&sample->pcapTimestamp)); /* thanks to Richard Clayton for this bugfix */
+  sf_log(sample,"\"datagram_source_ip\":\"%s\",", printAddress(&sample->sourceIP, buf));
+  sf_log(sample,"\"datagram_size\":%u,", sample->rawSampleLen);
+  sf_log(sample,"\"unix_seconds_utc\":%u,", sample->readTimestamp);
+  if(sample->pcapTimestamp) sf_log(sample,"\"pcap_timestamp\":\"%s\",", ctime(&sample->pcapTimestamp)); /* thanks to Richard Clayton for this bugfix */
 
   /* check the version */
   sample->datagramVersion = getData32(sample);
-  sf_log(sample,"\"datagramVersion\":%d,", sample->datagramVersion);
+  sf_log(sample,"\"datagram_version\":%d,", sample->datagramVersion);
   if(sample->datagramVersion != 2 &&
      sample->datagramVersion != 4 &&
      sample->datagramVersion != 5) {
@@ -4010,16 +4010,16 @@ static void readSFlowDatagram(SFSample *sample)
   /* version 5 has an agent sub-id as well */
   if(sample->datagramVersion >= 5) {
     sample->agentSubId = getData32(sample);
-    sf_log(sample,"\"agentSubId\":%u,", sample->agentSubId);
+    sf_log(sample,"\"agent_sub_id\":%u,", sample->agentSubId);
   }
 
   sample->sequenceNo = getData32(sample);  /* this is the packet sequence number */
   sample->sysUpTime = getData32(sample);
   samplesInPacket = getData32(sample);
   sf_log(sample,"\"agent\":\"%s\",", printAddress(&sample->agent_addr, buf));
-  sf_log(sample,"\"packetSequenceNo\":%u,", sample->sequenceNo);
-  sf_log(sample,"\"sysUpTime\":%u,", sample->sysUpTime);
-  sf_log(sample,"\"samplesInPacket\":%u,", samplesInPacket);
+  sf_log(sample,"\"packet_sequence_no\":%u,", sample->sequenceNo);
+  sf_log(sample,"\"sys_up_time\":%u,", sample->sysUpTime);
+  sf_log(sample,"\"samples_in_packet\":%u,", samplesInPacket);
 
   /* now iterate and pull out the flows and counters samples */
   {
