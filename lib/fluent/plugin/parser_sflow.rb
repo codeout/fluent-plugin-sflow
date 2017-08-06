@@ -1,11 +1,10 @@
-require 'fluent/plugin/parser'
-require 'fluent/time'
+require 'fluent/parser'
 require 'json'
 require 'sflowtool'
 
 
 module Fluent
-  module Plugin
+  class TextParser
     class SflowParser < Parser
       Plugin.register_parser('sflow', self)
 
@@ -14,7 +13,7 @@ module Fluent
         data = JSON.load(Sflowtool.parse(raw, remote_host))
 
         # NOTE: sFlow datagram doesn't have timestamp field, but sysUpTime only
-        time = Fluent::EventTime.new(data['header']['unix_seconds_utc'])
+        time = data['header']['unix_seconds_utc']
 
         data['samples'].each do |sample|
           yield time, data['header'].merge(sample)

@@ -1,12 +1,10 @@
-require 'fluent/plugin/input'
+require 'cool.io'
 require 'fluent/plugin/parser_sflow'
 
 
-module Fluent::Plugin
+module Fluent
   class SflowInput < Input
-    Fluent::Plugin.register_input('sflow', self)
-
-    helpers :server
+    Plugin.register_input('sflow', self)
 
     config_param :bind, :string, default: '0.0.0.0'
     config_param :port, :integer, default: 6343
@@ -16,14 +14,31 @@ module Fluent::Plugin
 
     def configure(conf)
       super
-      @parser = Fluent::Plugin::SflowParser.new
+      @parser = Fluent::TextParser::SflowParser.new
     end
 
     def start
       super
-      server_create(:in_sflow_server, @port, proto: :udp, bind: @bind, max_bytes: @max_bytes) do |data, sock|
-        receive(data, sock.remote_host)
-      end
+      @loop = Coolio::Loop.new
+      @handler = listen(method(:receive))
+      @loop.attach @handler
+
+      @thread = Thread.new(&method(:run))
+    end
+
+    def shutdown
+      @loop.watchers.each {|w| w.detach }
+      @loop.stop
+      @handler.close
+      @thread.join
+      super
+    end
+
+    def run
+      @loop.run
+    rescue
+      log.error 'unexpected error', error_class: $!.class, error: $!.message
+      log.error_backtrace
     end
 
 
@@ -45,6 +60,29 @@ module Fluent::Plugin
     rescue
       log.warn 'Unexpected error on parsing',
                raw: raw, exporter: exporter, error_class: $!.class, error: $!.message
+    end
+
+
+    private
+
+    def listen(callback)
+      log.info "listening sflow socket on #{@bind}:#{@port}"
+      @sock = SocketUtil.create_udp_socket(@bind)
+      @sock.bind @bind, @port
+      UdpHandler.new @sock, callback
+    end
+
+    class UdpHandler < Coolio::IO
+      def initialize(io, callback)
+        super io
+        @io = io
+        @callback = callback
+      end
+
+      def on_readable
+        msg, addr = @io.recvfrom_nonblock(4096)
+        @callback.call msg, addr[3]
+      end
     end
   end
 end

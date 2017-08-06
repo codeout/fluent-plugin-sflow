@@ -99,22 +99,22 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 
 ## Requirement
 
-* Fluentd: 0.14.x
-* See [master](https://github.com/codeout/fluent-plugin-sflow) branch for Fluentd 0.12.x.
+* Fluentd: 0.12.x
+* See [fluentd-0.14](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) branch for Fluentd 0.14.x.
 
 ## Install
 
 Add a line below on your Gemfile:
 
 ```shell
-$ gem 'fluent-plugin-sflow', git: 'https://github.com/codeout/fluent-plugin-sflow.git', branch: 'fluentd-0.14'
+$ gem 'fluent-plugin-sflow', git: 'https://github.com/codeout/fluent-plugin-sflow.git'
 ```
 
 or on CLI:
 
 ``` shell
 $ gem install specific_install
-$ gem specific_install https://github.com/codeout/fluent-plugin-sflow.git fluentd-0.14
+$ gem specific_install https://github.com/codeout/fluent-plugin-sflow.git
 ```
 
 ## Configuration
@@ -252,8 +252,8 @@ UDP port number on which this plugin will accept sFlow.
 Here is a quick benchmark on Macbook Pro Mid 2015:
 
 * sFlow v5 flow samples, 5.88 samples per packet in average
-* Fluentd v0.14.17
-* 13161 sFlow v5 records/s
+* Fluentd v0.12.39
+* 14202 sFlow v5 records/s
 
 
 ## TODO

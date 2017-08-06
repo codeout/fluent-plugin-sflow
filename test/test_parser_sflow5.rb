@@ -11,7 +11,7 @@ class ParserSflow5Test < Test::Unit::TestCase
 
 
   def parser
-    Fluent::Plugin::SflowParser.new
+    Fluent::TextParser::SflowParser.new
   end
 
 
