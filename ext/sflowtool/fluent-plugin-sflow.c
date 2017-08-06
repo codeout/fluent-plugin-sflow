@@ -16,6 +16,7 @@ VALUE wrap_receiveSFlowDatagram(self, data, exporter)
   char *addr;
 
   memset(&sample, 0, sizeof(sample));
+  sample.json = rb_str_new(0, 0);
 
   sample.rawSample = (uint8_t *)StringValuePtr(data);
   sample.rawSampleLen = (int)RSTRING_LEN(data);
@@ -25,7 +26,7 @@ VALUE wrap_receiveSFlowDatagram(self, data, exporter)
 
   receiveSFlowDatagram(&sample);
 
-  return Qnil;
+  return sample.json;
 }
 
 void detectAddressFamily(char *addr, SFSample *sample)

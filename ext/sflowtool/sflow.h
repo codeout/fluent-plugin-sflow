@@ -8,6 +8,7 @@
 */
 
 #include <setjmp.h>
+#include "ruby.h"
 
 #ifndef SFLOW_H
 #define SFLOW_H 1
@@ -1801,6 +1802,9 @@ typedef struct _SFSample {
 #define SF_ABORT_EOS 1
 #define SF_ABORT_DECODE_ERROR 2
 #define SF_ABORT_LENGTH_ERROR 3
+
+  /* Flow samples in json */
+  VALUE json;
 
 } SFSample;
 
