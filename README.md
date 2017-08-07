@@ -1,6 +1,6 @@
 # fluent-plugin-sflow
 
-[![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=fluentd-0.14)](https://travis-ci.org/codeout/fluent-plugin-sflow)
+[![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=master)](https://travis-ci.org/codeout/fluent-plugin-sflow)
 
 ## Overview
 
