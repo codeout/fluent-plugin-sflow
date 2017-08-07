@@ -12,4 +12,4 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-task :default => [:clobber, :compile]
+task :default => [:compile, :test]
