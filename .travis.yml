@@ -17,9 +17,9 @@ matrix:
   - os: osx
     rvm: 2.3
   - os: linux
-    rvm: 2.4
+    rvm: 2.4.0
   - os: osx
-    rvm: 2.4
+    rvm: 2.4.0
   - os: linux
     rvm: ruby-head
   - os: osx
