@@ -99,7 +99,7 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 
 ## Requirement
 
-* Fluentd: 0.12.x
+* Fluentd: 0.12.40 or later
 * See [fluentd-0.14](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) branch for Fluentd 0.14.x.
 
 ## Install
