@@ -39,7 +39,7 @@ class ParserSflow5Test < Test::Unit::TestCase
       'dst_mac' => '020586717d03',
       'src_mac' => '080027129909',
       'ip_size' => 84,
-      'ip.tot_len' => 84,
+      'ip_tot_len' => 84,
       'src_ip' => '10.1.2.2',
       'dst_ip' => '1.0.4.1',
       'ip_protocol' => 1,

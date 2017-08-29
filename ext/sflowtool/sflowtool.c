@@ -911,7 +911,7 @@ static void decodeIPV4(SFSample *sample)
     sample->dcd_ipProtocol = ip.protocol;
     sample->dcd_ipTos = ip.tos;
     sample->dcd_ipTTL = ip.ttl;
-    sf_log(sample,"\"ip.tot_len\":%d,", ntohs(ip.tot_len));
+    sf_log(sample,"\"ip_tot_len\":%d,", ntohs(ip.tot_len));
     /* Log out the decoded IP fields */
     sf_log(sample,"\"src_ip\":\"%s\",", printAddress(&sample->ipsrc, buf));
     sf_log(sample,"\"dst_ip\":\"%s\",", printAddress(&sample->ipdst, buf));
@@ -3664,16 +3664,16 @@ static void readCounters_SFP(SFSample *sample)
   num_lanes = getData32(sample);
   sf_log(sample, "\"sfp_module_active_lanes\":%u,", num_lanes);
   for(ll=0; ll < num_lanes; ll++) {
-    sf_log(sample, "\"sfp_lane_index.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_tx_bias_current_uA.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_tx_power_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_tx_power_min_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_tx_power_max_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_tx_wavelength_nM.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_rx_power_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_rx_power_min_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_rx_power_max_uW.%u\":%u,", ll, getData32(sample));
-    sf_log(sample, "\"sfp_lane_rx_wavelength_nM.%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_index_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_tx_bias_current_uA_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_tx_power_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_tx_power_min_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_tx_power_max_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_tx_wavelength_nM_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_rx_power_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_rx_power_min_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_rx_power_max_uW_%u\":%u,", ll, getData32(sample));
+    sf_log(sample, "\"sfp_lane_rx_wavelength_nM_%u\":%u,", ll, getData32(sample));
   }
 }
 
