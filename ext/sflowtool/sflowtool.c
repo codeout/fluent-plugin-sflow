@@ -1436,7 +1436,7 @@ static uint32_t sf_log_next32(SFSample *sample, char *fieldName) {
 
 static uint64_t sf_log_next64(SFSample *sample, char *fieldName) {
   uint64_t val64 = getData64(sample);
-  sf_log(sample,"\"%s\":\"%"PRIu64"\",", fieldName, val64);
+  sf_log(sample,"\"%s\":%"PRIu64",", fieldName, val64);
   return val64;
 }
 
