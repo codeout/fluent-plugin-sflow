@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=fluentd-0.14)](https://travis-ci.org/codeout/fluent-plugin-sflow)
 
+## This branch is valid only for Fluentd 0.14.x
+
+See [0.12.x branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.12.x.
+
 ## Overview
 
 [Fluentd](http://fluentd.org/) input plugin that acts as sFlow v2/v4/v5 collector.
@@ -100,7 +104,7 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 ## Requirement
 
 * Fluentd: 0.14.x
-* See [master](https://github.com/codeout/fluent-plugin-sflow) branch for Fluentd 0.12.x.
+* See [0.12.x](https://github.com/codeout/fluent-plugin-sflow) branch for Fluentd 0.12.x.
 
 ## Install
 
