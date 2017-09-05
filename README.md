@@ -11,7 +11,7 @@ Including a ruby wrapper of [sflowtool](http://www.inmon.com/technology/sflowToo
 
 ## Features
 
-fluent-plugin-sflow supports many packet formats below. Basically it can process anything sflowtool can do. :sparkles:
+fluent-plugin-sflow supports many packet formats below. Basically, it can process anything sflowtool can do. :sparkles:
 
 See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for more details.
 
@@ -259,10 +259,10 @@ Here is a quick benchmark on Macbook Pro Mid 2015:
 ## TODO
 
 * Add more tests
-  * Please send me the sFlow pcap file if your device is not supporeted. :cyclone:
+  * Please send me the sFlow pcap file if your device is not supported. :cyclone:
     1. Archive your pcap in .zip or .gz
     2. [Open a new issue](https://github.com/codeout/fluent-plugin-sflow/issues/new)
-    3. Attache the archive
+    3. Attach the archive
 * Merge into [RubyGem](https://rubygems.org/gems/fluent-plugin-sflow).
 
 
