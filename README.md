@@ -122,13 +122,11 @@ $ gem specific_install https://github.com/codeout/fluent-plugin-sflow.git
 ```
 <source>
   @type sflow
-  bind 0.0.0.0
   tag example.sflow
-</source>
 
-<match example.sflow>
-  @type stdout
-</match>
+  bind 0.0.0.0
+  port 6343
+</source>
 ```
 
 **bind**
