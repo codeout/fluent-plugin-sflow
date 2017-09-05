@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=master)](https://travis-ci.org/codeout/fluent-plugin-sflow)
 
+## This branch is valid only for Fluentd 0.12.40 or later
+
+See [0.14.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) for Fluentd 0.14.x.
+
 ## Overview
 
 [Fluentd](http://fluentd.org/) input plugin that acts as sFlow v2/v4/v5 collector.
@@ -100,7 +104,7 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 ## Requirement
 
 * Fluentd: 0.12.40 or later
-* See [fluentd-0.14](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) branch for Fluentd 0.14.x.
+* See [0.14.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) for Fluentd 0.14.x.
 
 ## Install
 
@@ -244,7 +248,7 @@ UDP port number on which this plugin will accept sFlow.
 Here is a quick benchmark on Macbook Pro Mid 2015:
 
 * sFlow v5 flow samples, 5.88 samples per packet in average
-* Fluentd v0.12.39
+* Fluentd v0.12.40
 * 14202 sFlow v5 records/s
 
 
