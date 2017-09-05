@@ -104,18 +104,12 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 
 ## Install
 
-Add a line below on your Gemfile:
-
-```shell
-$ gem 'fluent-plugin-sflow', git: 'https://github.com/codeout/fluent-plugin-sflow.git', branch: 'fluentd-0.14'
-```
-
-or on CLI:
-
 ``` shell
-$ gem install specific_install
-$ gem specific_install https://github.com/codeout/fluent-plugin-sflow.git fluentd-0.14
+$ gem install fluent-plugin-sflow
 ```
+
+You can also use ```fluent-gem``` or ```td-agent-gem``` instead of ```gem``` command.
+
 
 ## Configuration
 
@@ -261,7 +255,6 @@ Here is a quick benchmark on Macbook Pro Mid 2015:
     1. Archive your pcap in .zip or .gz
     2. [Open a new issue](https://github.com/codeout/fluent-plugin-sflow/issues/new)
     3. Attach the archive
-* Merge into [RubyGem](https://rubygems.org/gems/fluent-plugin-sflow).
 
 
 ## Contributing
