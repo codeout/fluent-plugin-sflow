@@ -2500,7 +2500,7 @@ static void readExtendedTCPInfo(SFSample *sample)
   case PKTDIR_sent: direction = "sent"; break;
   default: direction = "<bad value>"; break;
   }
-  sf_log(sample, "tcpinfo_direction\":\"%s\",", direction);
+  sf_log(sample, "\"tcpinfo_direction\":\"%s\",", direction);
   sf_log_next32(sample, "tcpinfo_send_mss");
   sf_log_next32(sample, "tcpinfo_receive_mss");
   sf_log_next32(sample, "tcpinfo_unacked_pkts");
