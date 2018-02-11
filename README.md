@@ -4,7 +4,7 @@
 
 ## This branch is valid only for Fluentd 0.12.40 or later
 
-See [0.14.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) for Fluentd 0.14.x.
+See [1.x.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-1) for Fluentd 0.14.x or later.
 
 ## Overview
 
@@ -104,7 +104,7 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 ## Requirement
 
 * Fluentd: 0.12.40 or later
-* See [0.14.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.14) for Fluentd 0.14.x.
+* See [1.x.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-1) for Fluentd 0.14.x or later.
 
 ## Install
 
