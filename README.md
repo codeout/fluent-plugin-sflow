@@ -271,6 +271,6 @@ Or send a pull request to fix.
 
 ## Copyright and License
 
-Copyright (c) 2017 Shintaro Kojima. Code released under the [MIT license](LICENSE.txt).
+Copyright (c) 2018 Shintaro Kojima. Code released under the [MIT license](LICENSE.txt).
 
 Code includes a part of [sflowtool](http://www.inmon.com/technology/sflowTools.php) which is distributed in the [InMon sFlow License](http://www.inmon.com/technology/sflowlicense.txt).
