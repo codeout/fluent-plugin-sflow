@@ -13,6 +13,8 @@ matrix:
   - os: linux
     rvm: 2.4.0
   - os: linux
+    rvm: 2.5.0
+  - os: linux
     rvm: ruby-head
   allow_failures:
   - rvm: ruby-head
