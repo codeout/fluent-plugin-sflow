@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=fluentd-0.14)](https://travis-ci.org/codeout/fluent-plugin-sflow)
 
-## This branch is valid only for Fluentd 0.14.x
+## This branch is valid for Fluentd 0.14.x or later
 
 See [0.12.x branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.12.x.
 
@@ -103,7 +103,7 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 
 ## Requirement
 
-* Fluentd: 0.14.x
+* Fluentd: 0.14.x or lator
 * See [0.12.x](https://github.com/codeout/fluent-plugin-sflow) branch for Fluentd 0.12.x.
 
 ## Install
