@@ -13,6 +13,9 @@ module Fluent::Plugin
     config_param :tag, :string
     config_param :max_bytes, :integer, default: 2048
 
+    def multi_workers_ready?
+      true
+    end
 
     def configure(conf)
       super
@@ -21,11 +24,11 @@ module Fluent::Plugin
 
     def start
       super
-      server_create(:in_sflow_server, @port, proto: :udp, bind: @bind, max_bytes: @max_bytes) do |data, sock|
+      shared_socket = system_config.workers > 1
+      server_create(:in_sflow_server, @port, proto: :udp, bind: @bind, shared: shared_socket, max_bytes: @max_bytes) do |data, sock|
         receive(data, sock.remote_host)
       end
     end
-
 
     protected
 
