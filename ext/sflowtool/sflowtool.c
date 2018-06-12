@@ -46,6 +46,154 @@ extern "C"
 #define SPOOFSOURCE 1
 #endif
 
+
+// rawshark
+#include <cfile.h>
+#include <epan/epan.h>
+#include <epan/epan-int.h>
+#include <epan/packet.h>
+#include <epan/tvbuff.h>
+#include <file.h>
+#include <frame_tvbuff.h>
+
+capture_file cfile;
+
+static void
+failure_warning_message(const char *msg_format, va_list ap)
+{
+  fprintf(stderr, "rawshark: ");
+  vfprintf(stderr, msg_format, ap);
+  fprintf(stderr, "\n");
+}
+
+static void
+open_failure_message(const char *filename, int err, gboolean for_writing)
+{
+  fprintf(stderr, "rawshark: ");
+  fprintf(stderr, file_open_error_message(err, for_writing), filename);
+  fprintf(stderr, "\n");
+}
+
+static void
+read_failure_message(const char *filename, int err)
+{
+  cmdarg_err("An error occurred while reading from the file \"%s\": %s.",
+             filename, g_strerror(err));
+}
+
+static void
+write_failure_message(const char *filename, int err)
+{
+  cmdarg_err("An error occurred while writing to the file \"%s\": %s.",
+             filename, g_strerror(err));
+}
+void cap_file_init(capture_file *cf)
+{
+  /* Initialize the capture file struct */
+  memset(cf, 0, sizeof(capture_file));
+  cf->snap = WTAP_MAX_PACKET_SIZE_STANDARD;
+}
+
+void rawshark_init()
+{
+  e_prefs *prefs_p;
+
+  init_process_policies();
+
+  init_report_message(failure_warning_message, failure_warning_message,
+                      open_failure_message, read_failure_message,
+                      write_failure_message);
+  wtap_init();
+
+  epan_init(register_all_protocols, register_all_protocol_handoffs, NULL, NULL);
+
+  cap_file_init(&cfile);
+
+  // cfile.epan = epan_new();
+  cfile.count = 0;
+
+  prefs_p = epan_load_settings();
+  build_column_format_array(&cfile.cinfo, prefs_p->num_cols, TRUE);
+}
+
+static void rawshark_clean(epan_dissect_t *edt)
+{
+  epan_dissect_free(edt);
+  epan_free(cfile.epan);
+  epan_cleanup();
+}
+
+static void rawshark_reset_epan(epan_dissect_t *edt)
+{
+  epan_dissect_cleanup(edt);
+  epan_free(cfile.epan);
+
+  cfile.epan = epan_new();
+  epan_dissect_init(edt, cfile.epan, TRUE, TRUE);
+}
+
+static void rawshark_print(epan_dissect_t *edt, SFSample *sample)
+{
+  char *buf;
+  size_t size;
+  FILE *out;
+
+  out = open_memstream(&buf, &size);
+
+  write_json_proto_tree(NULL, print_dissections_expanded,
+                        TRUE, NULL, PF_NONE,
+                        edt, out);
+  fflush(out);
+
+  rb_str_catf(sample->json, "\"header_decoded\":%s,", &buf[6]);  // NOTE: Truncate leading "  ,\n  "
+
+  fclose(out);
+  free(buf);
+}
+
+static void rawshark_process_packet(SFSample *sample)
+{
+  guint32 cum_bytes = 0;
+  gint64 data_offset = 0;
+  frame_data fdata;
+  epan_dissect_t *edt;
+
+  cfile.epan = epan_new();
+  cfile.epan->get_frame_ts = NULL;
+
+  edt = epan_dissect_new(cfile.epan, TRUE, TRUE);
+  // rawshark_reset_epan(edt);
+
+  struct wtap_pkthdr *whdr = g_malloc(sizeof(struct wtap_pkthdr));
+
+  whdr->rec_type = REC_TYPE_PACKET;
+  whdr->pkt_encap = wtap_pcap_encap_to_wtap_encap(1); /* ETHERNET */
+  whdr->caplen = (guint32)sample->headerLen;
+  whdr->len = whdr->caplen;
+  whdr->opt_comment = NULL;
+
+  cfile.count++;
+
+  frame_data_init(&fdata, cfile.count, whdr, data_offset, cum_bytes);
+  frame_data_set_before_dissect(&fdata, &cfile.elapsed_time, &cfile.ref, cfile.prev_dis);
+  cfile.ref = &fdata;
+
+  epan_dissect_run_with_taps(edt, cfile.cd_t, whdr, frame_tvbuff_new(&fdata, (unsigned char *)sample->header), &fdata, &cfile.cinfo);
+  frame_data_destroy(&fdata);
+  g_free(whdr);
+
+  frame_data_set_after_dissect(&fdata, &cum_bytes);
+
+  rawshark_print(edt, sample);
+
+  // cfile.prev_dis = &fdata;
+
+  epan_dissect_free(edt);
+  edt = NULL;
+  epan_free(cfile.epan);
+}
+// end of rawshark
+
   /*
 #ifdef DARWIN
 #include <architecture/byte_order.h>
@@ -2178,6 +2326,8 @@ static void readExtendedAggregation(SFSample *sample)
       char scratch[2000];
       printHex(sample->header, sample->headerLen, scratch, 2000, 0, 2000);
       sf_log(sample, "\"header_bytes\":\"%s\",", scratch);
+
+      rawshark_process_packet(sample);
     }
 
     switch (sample->headerProtocol)

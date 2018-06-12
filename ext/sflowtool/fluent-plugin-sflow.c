@@ -7,6 +7,7 @@
 
 void receiveSFlowDatagram();
 void detectAddressFamily(char *addr, SFSample *sample);
+void rawshark_init();
 
 
 VALUE wrap_receiveSFlowDatagram(self, data, exporter)
@@ -49,4 +50,10 @@ void Init_sflowtool()
 
   module = rb_define_module("Sflowtool");
   rb_define_module_function(module, "receive_sflow_datagram", wrap_receiveSFlowDatagram, 2);
+
+  // FIXME: This won't be cleaned
+  rawshark_init();
+
+  // rawshark_clean();
+  // edt = NULL;
 }
