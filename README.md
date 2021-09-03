@@ -1,10 +1,10 @@
 # fluent-plugin-sflow
 
-[![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=fluentd-0.14)](https://travis-ci.org/codeout/fluent-plugin-sflow)
+[![Test on Ubuntu](https://github.com/codeout/fluent-plugin-sflow/actions/workflows/test-linux.yaml/badge.svg)](https://github.com/codeout/fluent-plugin-sflow/actions/workflows/test-linux.yaml)
 
 ## This branch is valid for Fluentd 0.14.x or later
 
-See [0.12.x branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.12.x.
+See [0.12.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-0.12) for Fluentd 0.12.x.
 
 ## Overview
 
@@ -104,9 +104,43 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 ## Requirement
 
 * Fluentd: 0.14.x or lator
-* See [0.12.x](https://github.com/codeout/fluent-plugin-sflow) branch for Fluentd 0.12.x.
+  * See [fluentd-0.12 branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.12.x.
+* `gcc` and `make`
+* Ruby dev package
 
 ## Install
+
+You need to install development tools beforehand.
+
+:memo: If you see any problem on other platforms rather than Debian, Ubuntu, or CentOS, please [open a new issue](https://github.com/codeout/fluent-plugin-sflow/issues/new).
+
+### Debian Linux or Ubuntu Linux
+
+```shell
+$ sudo apt install -y gcc make
+```
+
+If you're using ruby installed by `apt`, install `ruby-dev`.  
+( Skip if your `ruby` is installed by `rbenv` )
+
+```shell
+$ sudo apt install -y ruby-dev
+```
+
+### CentOS Linux
+
+```shell
+$ sudo dnf install -y redhat-rpm-config gcc make
+```
+
+If you're using ruby installed by `dnf` ( or `yum` ), install `ruby-devel`.  
+( Skip if your `ruby` is installed by `rbenv` )
+
+```shell
+$ sudo dnf install -y ruby-devel
+```
+
+### fluent-plugin-sflow
 
 ``` shell
 $ gem install fluent-plugin-sflow
