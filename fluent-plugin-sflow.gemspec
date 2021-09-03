@@ -25,4 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rake-compiler"
   spec.add_development_dependency "test-unit"
+
+  if RUBY_VERSION.to_i > 2
+    spec.add_development_dependency "webrick"
+  end
 end
