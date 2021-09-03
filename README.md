@@ -1,10 +1,12 @@
 # fluent-plugin-sflow
 
-[![Build Status](https://travis-ci.org/codeout/fluent-plugin-sflow.svg?branch=master)](https://travis-ci.org/codeout/fluent-plugin-sflow)
+[![Test on Ubuntu](https://github.com/codeout/fluent-plugin-sflow/actions/workflows/test-linux.yaml/badge.svg?branch=fluentd-0.12)](https://github.com/codeout/fluent-plugin-sflow/actions/workflows/test-linux.yaml)
 
-## This branch is valid only for Fluentd 0.12.40 or later
+:warning: This branch is no longer maintained :warning:
 
-See [1.x.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-1) for Fluentd 0.14.x or later.
+## This branch is valid only for Fluentd 0.12.40 ~ 0.12.43
+
+See [master branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.14.x or later.
 
 ## Overview
 
@@ -103,10 +105,44 @@ See [sflowtool document](http://www.inmon.com/technology/sflowTools.php) for mor
 
 ## Requirement
 
-* Fluentd: 0.12.40 or later
-* See [1.x.x branch](https://github.com/codeout/fluent-plugin-sflow/tree/fluentd-1) for Fluentd 0.14.x or later.
+* Fluentd: 0.12.40 ~ 0.12.43
+  * See [master branch](https://github.com/codeout/fluent-plugin-sflow) for Fluentd 0.14.x or later.
+* `gcc` and `make`
+* Ruby dev package
 
 ## Install
+
+You need to install development tools beforehand.
+
+:memo: If you see any problem on other platforms rather than Debian, Ubuntu, or CentOS, please [open a new issue](https://github.com/codeout/fluent-plugin-sflow/issues/new).
+
+### Debian Linux or Ubuntu Linux
+
+```shell
+$ sudo apt install -y gcc make
+```
+
+If you're using ruby installed by `apt`, install `ruby-dev`.  
+( Skip if your `ruby` is installed by `rbenv` )
+
+```shell
+$ sudo apt install -y ruby-dev
+```
+
+### CentOS Linux
+
+```shell
+$ sudo dnf install -y redhat-rpm-config gcc make
+```
+
+If you're using ruby installed by `dnf` ( or `yum` ), install `ruby-devel`.  
+( Skip if your `ruby` is installed by `rbenv` )
+
+```shell
+$ sudo dnf install -y ruby-devel
+```
+
+### fluent-plugin-sflow
 
 ``` shell
 $ gem install fluent-plugin-sflow -v '~> 0.2.0'
